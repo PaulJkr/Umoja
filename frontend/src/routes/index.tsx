@@ -8,13 +8,13 @@ import ProtectedRoute from "../components/ProtectedRoute";
 import OverviewPage from "../pages/buyer/OverviewPage";
 import OrdersPage from "../pages/buyer/OrdersPage";
 import MarketplacePage from "../pages/buyer/MarketplacePage";
-import MessagesPage from "../pages/buyer/MessagesPage";
-import CalendarPage from "../pages/buyer/CalendarPage";
 import ProfilePage from "../pages/buyer/ProfilePage";
 import AdminDashboard from "../pages/admin/Dashboard";
 import BuyerDashboard from "../pages/buyer/Dashboard";
 import FarmerDashboard from "../pages/farmer/Dashboard";
 import SupplierDashboard from "../pages/supplier/Dashboard";
+import CalendarPage from "../pages/buyer/CalendarPage";
+import MessagesPage from "../pages/buyer/MessagesPage";
 
 const AppRoutes = () => {
   return (
@@ -35,7 +35,7 @@ const AppRoutes = () => {
 
       {/* Buyer */}
       <Route
-        path="/buyer"
+        path="/buyer/dashboard"
         element={
           <ProtectedRoute allowedRoles={["buyer"]}>
             <BuyerDashboard />

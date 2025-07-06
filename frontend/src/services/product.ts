@@ -71,3 +71,12 @@ export const useUpdateProduct = () => {
     },
   });
 };
+// 🌍 Fetch all products (for buyer view)
+export const useAllProducts = () =>
+  useQuery<Product[]>({
+    queryKey: ["allProducts"],
+    queryFn: async () => {
+      const res = await api.get("/products"); // 📣 Public endpoint for all products
+      return res.data;
+    },
+  });
