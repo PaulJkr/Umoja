@@ -9,10 +9,16 @@ import "react-toastify/dist/ReactToastify.css";
 const queryClient = new QueryClient();
 
 const App = () => {
+  const { isLoading, loadUserFromStorage } = useAuthStore();
+
   // Load user on first render
   useEffect(() => {
-    useAuthStore.getState().loadUserFromStorage();
-  }, []);
+    loadUserFromStorage();
+  }, [loadUserFromStorage]);
+
+  if (isLoading) {
+    return <div>Loading...</div>; // Or a proper spinner component
+  }
 
   return (
     <QueryClientProvider client={queryClient}>

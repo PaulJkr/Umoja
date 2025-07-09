@@ -7,5 +7,6 @@ router.post("/", verifyToken, orderCtrl.placeOrder);
 router.get("/farmer/:id", verifyToken, orderCtrl.getFarmerOrders);
 router.get("/farmer/:id/customers", verifyToken, orderCtrl.getFarmerCustomers);
 router.get("/farmer/:id/stats", verifyToken, orderCtrl.getFarmerStats);
+router.get("/buyer/:id", verifyToken, orderCtrl.getBuyerOrders);
 
 module.exports = router;

@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
-import axios from "axios";
+import api from "../../api/axios";
 import { useAuthStore, User } from "../../context/authStore";
 
 const Login = () => {
@@ -11,10 +11,11 @@ const Login = () => {
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      const res = await axios.post<{ token: string; user: User }>(
-        "/api/auth/login",
+      const res = await api.post<{ token: string; user: User }>(
+        "/auth/login",
         form
       );
+      console.log("Login response:", res.data);
       setUser(res.data.user);
       localStorage.setItem("token", res.data.token);
       navigate(`/${res.data.user.role}/dashboard`);

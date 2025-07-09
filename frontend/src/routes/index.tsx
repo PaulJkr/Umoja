@@ -3,10 +3,7 @@ import Login from "../pages/auth/Login";
 import Register from "../pages/auth/Register";
 
 import ProtectedRoute from "../components/ProtectedRoute";
-
-// Dummy buyer sub-pages (replace with real ones)
-import OverviewPage from "../pages/buyer/OverviewPage";
-import OrdersPage from "../pages/buyer/OrdersPage";
+import OrdersPage from "../pages/buyer/MyOrdersPage";
 import MarketplacePage from "../pages/buyer/MarketplacePage";
 import ProfilePage from "../pages/buyer/ProfilePage";
 import AdminDashboard from "../pages/admin/Dashboard";
@@ -15,6 +12,7 @@ import FarmerDashboard from "../pages/farmer/Dashboard";
 import SupplierDashboard from "../pages/supplier/Dashboard";
 import CalendarPage from "../pages/buyer/CalendarPage";
 import MessagesPage from "../pages/buyer/MessagesPage";
+import ExplorePage from "../pages/buyer/ExplorePage";
 
 const AppRoutes = () => {
   return (
@@ -23,7 +21,7 @@ const AppRoutes = () => {
       <Route path="/login" element={<Login />} />
       <Route path="/register" element={<Register />} />
 
-      {/* Farmer */}
+      {/* Farmer Dashboard */}
       <Route
         path="/farmer/dashboard"
         element={
@@ -33,7 +31,7 @@ const AppRoutes = () => {
         }
       />
 
-      {/* Buyer */}
+      {/* Buyer Dashboard with nested routes */}
       <Route
         path="/buyer/dashboard"
         element={
@@ -42,16 +40,16 @@ const AppRoutes = () => {
           </ProtectedRoute>
         }
       >
-        <Route path="overview" element={<OverviewPage />} />
+        <Route index element={<Navigate to="explore" />} />
+        <Route path="explore" element={<ExplorePage />} />
         <Route path="orders" element={<OrdersPage />} />
         <Route path="marketplace" element={<MarketplacePage />} />
         <Route path="messages" element={<MessagesPage />} />
         <Route path="calendar" element={<CalendarPage />} />
         <Route path="profile" element={<ProfilePage />} />
-        <Route index element={<Navigate to="overview" />} />
       </Route>
 
-      {/* Admin */}
+      {/* Admin Dashboard */}
       <Route
         path="/admin/dashboard"
         element={
@@ -61,7 +59,7 @@ const AppRoutes = () => {
         }
       />
 
-      {/* Supplier */}
+      {/* Supplier Dashboard */}
       <Route
         path="/supplier/dashboard"
         element={

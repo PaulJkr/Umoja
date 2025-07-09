@@ -130,3 +130,34 @@ exports.getFarmerStats = async (req, res) => {
     res.status(500).json({ msg: "Error fetching stats", error: err.message });
   }
 };
+exports.getBuyerOrders = async (req, res) => {
+  const buyerId = req.params.id;
+
+  try {
+    const orders = await Order.find({ buyerId })
+      .populate("products.productId", "name price type")
+      .populate("sellerId", "name phone");
+
+    const formatted = orders.map((order) => ({
+      _id: order._id,
+      products: order.products.map((p) => ({
+        productId: {
+          name: p.productId?.name || "Product",
+          price: p.productId?.price || 0,
+          type: p.productId?.type || "general",
+        },
+        quantity: p.quantity,
+      })),
+      sellerId: order.sellerId,
+      status: order.status,
+      createdAt: order.createdAt,
+      transactionId: order.transactionId,
+    }));
+
+    res.json(formatted);
+  } catch (err) {
+    res
+      .status(500)
+      .json({ msg: "Error fetching buyer orders", error: err.message });
+  }
+};

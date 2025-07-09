@@ -42,7 +42,12 @@ exports.login = async (req, res) => {
     const token = generateToken(user);
     res.status(200).json({
       token,
-      user: { name: user.name, role: user.role, phone: user.phone },
+      user: {
+        _id: user._id,
+        name: user.name,
+        role: user.role,
+        phone: user.phone,
+      },
     });
   } catch (err) {
     res.status(500).json({ msg: "Server error" });

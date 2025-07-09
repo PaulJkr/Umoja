@@ -45,9 +45,18 @@ exports.getProducts = async (req, res) => {
   try {
     const products = await Product.find({ verified: true }).populate(
       "ownerId",
-      "name role"
+      "name role phone"
     );
-    res.json(products);
+
+    // Transform `ownerId` into `seller`
+    const renamed = products.map((product) => {
+      const productObj = product.toObject();
+      productObj.seller = productObj.ownerId;
+      delete productObj.ownerId;
+      return productObj;
+    });
+
+    res.json(renamed);
   } catch (err) {
     res.status(500).json({ msg: "Error fetching products" });
   }
