@@ -7,7 +7,7 @@ export const useFarmerOrders = () => {
   return useQuery({
     queryKey: ["farmer-orders", user?._id],
     queryFn: () =>
-      axios.get(`/api/orders/farmer/${user?._id}`).then((r) => r.data),
+      api.get(`/api/orders/farmer/${user?._id}`).then((r) => r.data),
     enabled: !!user?._id,
   });
 };
@@ -17,7 +17,7 @@ export const useFarmerCustomers = () => {
   return useQuery({
     queryKey: ["farmer-customers", user?._id],
     queryFn: () =>
-      axios
+      api
         .get(`/api/orders/farmer/${user?._id}/customers`)
         .then((r) => r.data),
     enabled: !!user?._id,

@@ -5,7 +5,7 @@ export const useFarmerAnalytics = (farmerId: string) => {
   return useQuery({
     queryKey: ["farmerAnalytics", farmerId],
     queryFn: async () => {
-      const res = await axios.get(`/api/orders/farmer/${farmerId}/analytics`);
+      const res = await api.get(`/api/orders/farmer/${farmerId}/stats`);
       return res.data;
     },
     enabled: !!farmerId,
