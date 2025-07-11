@@ -67,6 +67,7 @@ exports.getFarmerOrders = async (req, res) => {
       .populate("buyerId", "name phone")
       .populate("products.productId", "name price");
 
+    console.log("Farmer Orders:", JSON.stringify(orders, null, 2)); // Add this line
     res.json(orders);
   } catch (err) {
     res.status(500).json({ msg: "Error fetching orders", error: err.message });

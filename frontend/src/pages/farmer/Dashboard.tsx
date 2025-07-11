@@ -141,23 +141,26 @@ interface OrderCardProps {
   };
 }
 
-const OrderCard: React.FC<OrderCardProps> = ({ order }) => (
-  <div className="bg-white rounded-lg p-4 shadow">
-    <p className="font-semibold">
-      Buyer: {order.buyerId.name} ({order.buyerId.phone})
-    </p>
-    <ul className="ml-4 list-disc text-sm text-gray-600 mt-2">
-      {order.products.map((p) => (
-        <li key={p.productId._id}>
-          {p.productId.name} × {p.quantity}
-        </li>
-      ))}
-    </ul>
-    <p className="text-sm text-green-600 mt-2">
-      Status: {order.status} | Txn: {order.transactionId}
-    </p>
-  </div>
-);
+const OrderCard: React.FC<OrderCardProps> = ({ order }) => {
+  return (
+    <div className="bg-white rounded-lg p-4 shadow">
+      <p className="font-semibold">
+        Buyer: {order.buyerId?.name || "Unknown"} (
+        {order.buyerId?.phone || "No phone"})
+      </p>
+      <ul className="ml-4 list-disc text-sm text-gray-600 mt-2">
+        {order.products?.map((p) => (
+          <li key={p.productId?._id || Math.random()}>
+            {p.productId?.name || "Unknown Product"} × {p.quantity}
+          </li>
+        ))}
+      </ul>
+      <p className="text-sm text-green-600 mt-2">
+        Status: {order.status} | Txn: {order.transactionId}
+      </p>
+    </div>
+  );
+};
 
 interface CustomerCardProps {
   customer: {
@@ -324,6 +327,7 @@ const FarmerDashboard: React.FC = () => {
   const addProduct = useAddProduct();
   const deleteProduct = useDeleteProduct();
   const ordersQuery = useFarmerOrders();
+  console.log("Orders query result:", ordersQuery.data);
   const customersQuery = useFarmerCustomers();
   const analyticsQuery = useFarmerAnalytics(user?._id ?? "");
 
