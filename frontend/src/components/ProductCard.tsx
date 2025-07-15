@@ -1,23 +1,95 @@
+import React from "react";
+import { User, PhoneCall, Trash2 } from "lucide-react";
 import { Product } from "../services/product";
+import { toast } from "react-toastify";
 
-interface Props {
+interface ProductCardProps {
   product: Product;
-  onDelete: (id: string) => void;
+  onBuyClick?: (product: Product) => void;
+  onDelete?: (id: string) => void;
+  disableBuy?: boolean;
+  isLoading?: boolean;
+  showSellerInfo?: boolean;
+  showDelete?: boolean;
 }
 
-const ProductCard = ({ product, onDelete }: Props) => {
+const ProductCard: React.FC<ProductCardProps> = ({
+  product,
+  onBuyClick,
+  onDelete,
+  disableBuy = false,
+  isLoading = false,
+  showSellerInfo = true,
+  showDelete = false,
+}) => {
   return (
-    <div className="p-4 bg-white border rounded shadow space-y-2">
-      <h2 className="font-semibold text-lg">{product.name}</h2>
-      <p>Price: KES {product.price}</p>
-      <p>Quantity: {product.quantity}</p>
-      <p className="text-gray-500 text-sm">{product.category}</p>
-      <button
-        onClick={() => onDelete(product._id)}
-        className="text-red-600 hover:underline text-sm"
-      >
-        Delete
-      </button>
+    <div className="bg-white border rounded-lg p-4 shadow hover:shadow-md transition flex flex-col h-full">
+      {product.imageUrl && (
+        <img
+          src={product.imageUrl}
+          alt={product.name}
+          className="w-full h-40 object-cover rounded mb-3"
+        />
+      )}
+
+      <div className="flex-grow">
+        <h3 className="text-lg font-semibold">{product.name}</h3>
+        <p className="text-sm text-gray-600 capitalize">{product.type}</p>
+        {product.category && (
+          <p className="text-sm text-gray-500">{product.category}</p>
+        )}
+        <p className="mt-1 font-bold text-green-700">
+          KES {product.price.toLocaleString()}
+        </p>
+        <p className="text-sm text-gray-600">Qty: {product.quantity}</p>
+
+        {product.harvestDate && (
+          <p className="text-sm text-gray-500 mt-1">
+            Harvested: {new Date(product.harvestDate).toLocaleDateString()}
+          </p>
+        )}
+
+        {showSellerInfo && product.seller && (
+          <div className="mt-4 p-3 bg-gray-50 rounded border">
+            <h4 className="text-sm font-semibold text-gray-700 mb-2">
+              Farmer Info
+            </h4>
+            <p className="flex items-center text-sm text-gray-700 mb-1">
+              <User className="w-4 h-4 mr-1" /> {product.seller.name}
+            </p>
+            <p className="flex items-center text-sm text-gray-700">
+              <PhoneCall className="w-4 h-4 mr-1" /> {product.seller.phone}
+            </p>
+          </div>
+        )}
+      </div>
+
+      <div className="mt-4 space-y-2">
+        {onBuyClick && (
+          <button
+            onClick={() => {
+              if (disableBuy || isLoading) {
+                toast.info("⏳ Please wait...");
+                return;
+              }
+              onBuyClick(product);
+            }}
+            disabled={disableBuy || isLoading}
+            className="w-full bg-green-600 text-white py-2 rounded hover:bg-green-700 transition disabled:opacity-50"
+          >
+            {isLoading ? "Processing..." : "Request / Buy"}
+          </button>
+        )}
+
+        {showDelete && onDelete && (
+          <button
+            onClick={() => onDelete(product._id)}
+            className="w-full flex items-center justify-center gap-2 text-red-600 border border-red-600 py-2 rounded hover:bg-red-50 transition"
+          >
+            <Trash2 className="w-4 h-4" /> Delete
+          </button>
+        )}
+      </div>
     </div>
   );
 };

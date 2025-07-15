@@ -2,6 +2,15 @@ import api from "../api/axios"; // ✅ This ensures token is sent
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 
 // Product type definition
+// Add Seller interface
+export interface Seller {
+  _id: string;
+  name: string;
+  phone: string;
+  // Add other seller properties as needed
+}
+
+// Update Product interface
 export interface Product {
   _id: string;
   name: string;
@@ -13,8 +22,8 @@ export interface Product {
   harvestDate?: string;
   certification?: string;
   verified?: boolean;
+  seller?: Seller; // Add optional seller info
 }
-
 // 🔍 Fetch all products owned by the logged-in farmer/supplier
 export const useFarmerProducts = () =>
   useQuery<Product[]>({
