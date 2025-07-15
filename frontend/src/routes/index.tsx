@@ -13,6 +13,7 @@ import SupplierDashboard from "../pages/supplier/Dashboard";
 import CalendarPage from "../pages/buyer/CalendarPage";
 import MessagesPage from "../pages/buyer/MessagesPage";
 import ExplorePage from "../pages/buyer/ExplorePage";
+import WishlistPage from "../pages/buyer/WishlistPage"; // ✅ NEW
 
 const AppRoutes = () => {
   return (
@@ -44,6 +45,7 @@ const AppRoutes = () => {
         <Route path="explore" element={<ExplorePage />} />
         <Route path="orders" element={<OrdersPage />} />
         <Route path="marketplace" element={<MarketplacePage />} />
+        <Route path="wishlist" element={<WishlistPage />} /> {/* ✅ Added */}
         <Route path="messages" element={<MessagesPage />} />
         <Route path="calendar" element={<CalendarPage />} />
         <Route path="profile" element={<ProfilePage />} />

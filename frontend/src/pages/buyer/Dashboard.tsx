@@ -17,6 +17,7 @@ const tabs = [
   { id: "explore", label: "Explore", icon: ShoppingBag },
   { id: "orders", label: "My Orders", icon: History },
   { id: "marketplace", label: "Marketplace", icon: Store },
+  { id: "wishlist", label: "Wishlist", icon: ShoppingBag },
   { id: "messages", label: "Messages", icon: MessageSquare },
   { id: "calendar", label: "Calendar", icon: CalendarDays },
   { id: "profile", label: "Profile", icon: User },

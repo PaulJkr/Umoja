@@ -1,13 +1,12 @@
-// src/pages/buyer/MarketplacePage.tsx
 import React, { useState, useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { Loader, Search } from "lucide-react";
+import { Loader, Search, Heart, HeartCrack } from "lucide-react";
 import api from "../../api/axios";
 import { useAuthStore } from "../../context/authStore";
-import ProductCard from "../../components/ProductCard";
+import { useWishlistStore } from "../../context/wishlistStore";
 import { toast } from "react-toastify";
 
-export interface Product {
+interface Product {
   _id: string;
   name: string;
   price: number;
@@ -26,6 +25,8 @@ const MarketplacePage = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [category, setCategory] = useState("all");
   const [sortBy, setSortBy] = useState("default");
+
+  const { toggleWishlist, isInWishlist } = useWishlistStore();
 
   useEffect(() => {
     loadUserFromStorage();
@@ -58,11 +59,21 @@ const MarketplacePage = () => {
       return 0;
     });
 
+  if (isLoading)
+    return (
+      <div className="p-6 text-gray-600">
+        Loading <Loader className="inline animate-spin" />
+      </div>
+    );
+
+  if (isError)
+    return <div className="p-6 text-red-500">Failed to load products.</div>;
+
   return (
     <div className="p-6 space-y-6">
       <h2 className="text-2xl font-bold">Marketplace</h2>
 
-      {/* Search + Filter Controls */}
+      {/* Search + Filter */}
       <div className="flex flex-col md:flex-row md:items-center gap-4">
         <div className="relative w-full md:w-1/3">
           <Search className="absolute left-3 top-2.5 w-4 h-4 text-gray-400" />
@@ -99,21 +110,51 @@ const MarketplacePage = () => {
         </select>
       </div>
 
-      {/* Grid */}
-      {isLoading ? (
-        <div className="text-gray-600 p-6">
-          Loading <Loader className="inline animate-spin" />
-        </div>
-      ) : isError ? (
-        <div className="text-red-500 p-6">Failed to load products.</div>
-      ) : filteredProducts.length === 0 ? (
+      {/* Product Grid */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+        {filteredProducts.map((product) => (
+          <div
+            key={product._id}
+            className="relative bg-white border rounded-lg p-4 shadow hover:shadow-md transition"
+          >
+            {product.imageUrl && (
+              <img
+                src={product.imageUrl}
+                alt={product.name}
+                className="w-full h-40 object-cover rounded mb-3"
+              />
+            )}
+            <h3 className="text-lg font-semibold">{product.name}</h3>
+            <p className="text-sm text-gray-600 capitalize">{product.type}</p>
+            <p className="mt-1 font-bold text-green-700">
+              KES {product.price.toLocaleString()}
+            </p>
+            <p className="text-sm text-gray-600">Qty: {product.quantity}</p>
+
+            {product.seller && (
+              <div className="mt-3 text-sm text-gray-600">
+                👨‍🌾 {product.seller.name} <br />
+                📞 {product.seller.phone}
+              </div>
+            )}
+
+            <button
+              onClick={() => toggleWishlist(product)}
+              className="absolute top-2 right-2 bg-pink-100 text-pink-500 rounded-full p-1 hover:bg-pink-200 transition"
+              title="Toggle Wishlist"
+            >
+              {isInWishlist(product._id) ? (
+                <HeartCrack className="w-5 h-5" />
+              ) : (
+                <Heart className="w-5 h-5" />
+              )}
+            </button>
+          </div>
+        ))}
+      </div>
+
+      {filteredProducts.length === 0 && (
         <p className="text-gray-500 text-center pt-10">No products found.</p>
-      ) : (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-          {filteredProducts.map((product) => (
-            <ProductCard key={product._id} product={product} />
-          ))}
-        </div>
       )}
     </div>
   );
