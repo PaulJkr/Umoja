@@ -14,10 +14,12 @@ import CalendarPage from "../pages/buyer/CalendarPage";
 import MessagesPage from "../pages/buyer/MessagesPage";
 import ExplorePage from "../pages/buyer/ExplorePage";
 import WishlistPage from "../pages/buyer/WishlistPage"; // ✅ NEW
+import Index from "../pages/Index";
 
 const AppRoutes = () => {
   return (
     <Routes>
+      <Route path="/" element={<Index />} />
       <Route path="/" element={<Navigate to="/register" />} />
       <Route path="/login" element={<Login />} />
       <Route path="/register" element={<Register />} />
