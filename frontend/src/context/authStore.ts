@@ -5,6 +5,7 @@ export interface User {
   name: string;
   phone: string;
   role: "farmer" | "buyer" | "admin" | "supplier";
+  location?: string;
 }
 
 interface AuthState {
@@ -15,18 +16,23 @@ interface AuthState {
   loadUserFromStorage: () => void;
 }
 
-export const useAuthStore = create<AuthState>((set) => ({
+export const useAuthStore = create<
+  AuthState & { updateUser: (user: Partial<User>) => void }
+>((set, get) => ({
   user: null,
   isLoading: true,
+
   setUser: (user) => {
     localStorage.setItem("user", JSON.stringify(user));
     set({ user });
   },
+
   logout: () => {
     localStorage.removeItem("user");
     localStorage.removeItem("token");
     set({ user: null });
   },
+
   loadUserFromStorage: () => {
     try {
       const stored = localStorage.getItem("user");
@@ -39,5 +45,15 @@ export const useAuthStore = create<AuthState>((set) => ({
       console.error("Failed to parse user from storage", error);
       set({ isLoading: false });
     }
+  },
+
+  // 🆕 New method to update user in memory + storage
+  updateUser: (updatedFields) => {
+    const currentUser = get().user;
+    if (!currentUser) return;
+
+    const updatedUser = { ...currentUser, ...updatedFields };
+    localStorage.setItem("user", JSON.stringify(updatedUser));
+    set({ user: updatedUser });
   },
 }));
