@@ -7,7 +7,7 @@ router.get("/sellers", async (req, res) => {
   try {
     const sellers = await User.find(
       { role: { $in: ["farmer", "supplier"] } },
-      "_id name phone"
+      "_id name phone role location"
     );
     res.status(200).json(sellers);
   } catch (err) {
