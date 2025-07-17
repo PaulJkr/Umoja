@@ -184,66 +184,101 @@ const CustomerCard: React.FC<CustomerCardProps> = ({ customer }) => (
   </div>
 );
 
-interface ChartCardProps {
-  data: Record<string, any>;
+interface LineChartCardProps {
+  data: Record<string, number>;
 }
 
-const LineChartCard: React.FC<ChartCardProps> = ({ data }) => (
-  <div className="bg-white p-6 rounded-xl shadow">
-    <h3 className="text-lg font-semibold mb-4 flex items-center">
-      <LineChartIcon className="w-5 h-5 mr-2 text-green-600" />
-      Revenue (Last 30 days)
-    </h3>
-    <ResponsiveContainer width="100%" height={300}>
-      <LineChart
-        data={Object.entries(data).map(([day, revenue]) => ({ day, revenue }))}
-      >
-        <XAxis dataKey="day" />
-        <YAxis />
-        <Tooltip />
-        <Line
-          dataKey="revenue"
-          stroke="#22c55e"
-          strokeWidth={2}
-          dot={{ fill: "#22c55e" }}
-        />
-      </LineChart>
-    </ResponsiveContainer>
-  </div>
-);
+const LineChartCard: React.FC<LineChartCardProps> = ({ data }) => {
+  // Convert the data object to array format for Recharts
+  const chartData = Object.entries(data || {})
+    .map(([date, revenue]) => ({
+      date: new Date(date).toLocaleDateString("en-US", {
+        month: "short",
+        day: "numeric",
+      }),
+      revenue: Number(revenue),
+    }))
+    .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
 
-const PieChartCard: React.FC<ChartCardProps> = ({ data }) => (
-  <div className="bg-white p-6 rounded-xl shadow">
-    <h3 className="text-lg font-semibold mb-4 flex items-center">
-      <PieChartIcon className="w-5 h-5 mr-2 text-green-600" />
-      Top Products
-    </h3>
-    <ResponsiveContainer width="100%" height={300}>
-      <PieChart>
-        <Pie
-          data={Object.entries(data).map(([name, value]) => ({ name, value }))}
-          dataKey="value"
-          nameKey="name"
-          cx="50%"
-          cy="50%"
-          outerRadius={80}
-          label
-        >
-          {Object.keys(data).map((_, idx) => (
-            <Cell
-              key={idx}
-              fill={
-                ["#22c55e", "#10b981", "#059669", "#047857", "#065f46"][idx % 5]
-              }
+  return (
+    <div className="bg-white p-6 rounded-xl shadow">
+      <h3 className="text-lg font-semibold mb-4 flex items-center">
+        <LineChartIcon className="w-5 h-5 mr-2 text-green-600" />
+        Revenue Trend (Last 30 Days)
+      </h3>
+      {chartData.length > 0 ? (
+        <ResponsiveContainer width="100%" height={300}>
+          <LineChart data={chartData}>
+            <XAxis dataKey="date" />
+            <YAxis />
+            <Tooltip formatter={(value) => [`Ksh.${value}`, "Revenue"]} />
+            <Line
+              dataKey="revenue"
+              stroke="#22c55e"
+              strokeWidth={2}
+              dot={{ fill: "#22c55e" }}
             />
-          ))}
-        </Pie>
-        <Tooltip />
-        <Legend />
-      </PieChart>
-    </ResponsiveContainer>
-  </div>
-);
+          </LineChart>
+        </ResponsiveContainer>
+      ) : (
+        <div className="flex items-center justify-center h-[300px] text-gray-500">
+          No sales data available
+        </div>
+      )}
+    </div>
+  );
+};
+
+interface PieChartCardProps {
+  data: Record<string, number>;
+}
+
+const PieChartCard: React.FC<PieChartCardProps> = ({ data }) => {
+  // Convert the data object to array format for Recharts
+  const chartData = Object.entries(data || {})
+    .map(([name, value]) => ({ name, value: Number(value) }))
+    .filter((item) => item.value > 0)
+    .sort((a, b) => b.value - a.value)
+    .slice(0, 5); // Show top 5 products
+
+  const colors = ["#22c55e", "#10b981", "#059669", "#047857", "#065f46"];
+
+  return (
+    <div className="bg-white p-6 rounded-xl shadow">
+      <h3 className="text-lg font-semibold mb-4 flex items-center">
+        <PieChartIcon className="w-5 h-5 mr-2 text-green-600" />
+        Top Products by Revenue
+      </h3>
+      {chartData.length > 0 ? (
+        <ResponsiveContainer width="100%" height={300}>
+          <PieChart>
+            <Pie
+              data={chartData}
+              dataKey="value"
+              nameKey="name"
+              cx="50%"
+              cy="50%"
+              outerRadius={80}
+              label={({ name, percent }) =>
+                `${name} ${((percent ?? 0) * 100).toFixed(0)}%`
+              }
+            >
+              {chartData.map((_, idx) => (
+                <Cell key={idx} fill={colors[idx % colors.length]} />
+              ))}
+            </Pie>
+            <Tooltip formatter={(value) => [`Ksh.${value}`, "Revenue"]} />
+            <Legend />
+          </PieChart>
+        </ResponsiveContainer>
+      ) : (
+        <div className="flex items-center justify-center h-[300px] text-gray-500">
+          No product sales data available
+        </div>
+      )}
+    </div>
+  );
+};
 
 interface ProductFormProps {
   onSubmit: (data: ProductFormInput) => void;
@@ -514,7 +549,7 @@ const FarmerDashboard: React.FC = () => {
                         <h3 className="font-semibold">{p.name}</h3>
                         <p className="text-sm text-gray-500">{p.category}</p>
                         <p className="text-sm text-green-600 font-medium">
-                          ${p.price} • Qty: {p.quantity}
+                          Ksh.{p.price} • Qty: {p.quantity}
                         </p>
                       </div>
                       <button
@@ -538,7 +573,7 @@ const FarmerDashboard: React.FC = () => {
                 <p>Loading...</p>
               ) : (
                 <div className="space-y-4">
-                  {ordersQuery.data?.map((o) => (
+                  {ordersQuery.data?.map((o: OrderCardProps["order"]) => (
                     <OrderCard key={o._id} order={o} />
                   ))}
                 </div>
@@ -554,9 +589,11 @@ const FarmerDashboard: React.FC = () => {
                 <p>Loading...</p>
               ) : (
                 <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
-                  {customersQuery.data?.map((c) => (
-                    <CustomerCard key={c._id} customer={c} />
-                  ))}
+                  {customersQuery.data?.map(
+                    (c: CustomerCardProps["customer"]) => (
+                      <CustomerCard key={c._id} customer={c} />
+                    )
+                  )}
                 </div>
               )}
             </>
@@ -564,19 +601,80 @@ const FarmerDashboard: React.FC = () => {
 
           {/* Analytics */}
           {activeTab === "analytics" && (
-            <>
+            <div className="space-y-6">
               <h2 className="text-2xl font-bold">Analytics</h2>
+
               {analyticsQuery.isLoading ? (
-                <p>Loading...</p>
-              ) : (
-                <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-                  <LineChartCard data={analyticsQuery.data?.salesTrend ?? {}} />
-                  <PieChartCard
-                    data={analyticsQuery.data?.salesByProduct ?? {}}
-                  />
+                <div className="flex items-center justify-center h-64">
+                  <div className="text-center">
+                    <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-green-600 mx-auto"></div>
+                    <p className="mt-4 text-gray-600">Loading analytics...</p>
+                  </div>
                 </div>
+              ) : analyticsQuery.error ? (
+                <div className="bg-red-50 border border-red-200 rounded-lg p-4">
+                  <p className="text-red-700">Error loading analytics data</p>
+                  <p className="text-sm text-red-600 mt-2">
+                    {analyticsQuery.error instanceof Error
+                      ? analyticsQuery.error.message
+                      : "Unknown error"}
+                  </p>
+                </div>
+              ) : (
+                <>
+                  {/* Summary Stats */}
+                  <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
+                    <div className="bg-white p-4 rounded-lg shadow">
+                      <p className="text-sm text-gray-500">Total Revenue</p>
+                      <p className="text-2xl font-bold text-green-600">
+                        Ksh.
+                        {analyticsQuery.data?.totalRevenue?.toFixed(2) ||
+                          "0.00"}
+                      </p>
+                    </div>
+                    <div className="bg-white p-4 rounded-lg shadow">
+                      <p className="text-sm text-gray-500">Total Orders</p>
+                      <p className="text-2xl font-bold text-blue-600">
+                        {analyticsQuery.data?.totalOrders || 0}
+                      </p>
+                    </div>
+                    <div className="bg-white p-4 rounded-lg shadow">
+                      <p className="text-sm text-gray-500">
+                        Average Order Value
+                      </p>
+                      <p className="text-2xl font-bold text-purple-600">
+                        Ksh.
+                        {(analyticsQuery.data?.totalOrders ?? 0) > 0
+                          ? (
+                              (analyticsQuery.data?.totalRevenue || 0) /
+                              (analyticsQuery.data?.totalOrders ?? 1)
+                            ).toFixed(2)
+                          : "0.00"}
+                      </p>
+                    </div>
+                    <div className="bg-white p-4 rounded-lg shadow">
+                      <p className="text-sm text-gray-500">Products Sold</p>
+                      <p className="text-2xl font-bold text-orange-600">
+                        {
+                          Object.keys(analyticsQuery.data?.salesByProduct || {})
+                            .length
+                        }
+                      </p>
+                    </div>
+                  </div>
+
+                  {/* Charts */}
+                  <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                    <LineChartCard
+                      data={analyticsQuery.data?.salesTrend || {}}
+                    />
+                    <PieChartCard
+                      data={analyticsQuery.data?.salesByProduct || {}}
+                    />
+                  </div>
+                </>
               )}
-            </>
+            </div>
           )}
 
           {/* Calendar */}
