@@ -24,6 +24,7 @@ import api from "../../api/axios";
 import { useAuthStore } from "../../context/authStore";
 import { useWishlistStore } from "../../context/wishlistStore";
 import { toast } from "react-toastify";
+import { useCartStore } from "../../context/cartStore";
 
 interface Product {
   _id: string;
@@ -116,7 +117,7 @@ const MarketplacePage = () => {
   const [category, setCategory] = useState("all");
   const [sortBy, setSortBy] = useState("default");
   const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
-
+  const { addToCart } = useCartStore();
   const { toggleWishlist, isInWishlist } = useWishlistStore();
 
   useEffect(() => {
@@ -423,7 +424,6 @@ const MarketplacePage = () => {
                         {product.quantity} available
                       </span>
                     </div>
-
                     {/* Seller Info */}
                     {product.seller && (
                       <div className="pt-3 border-t border-slate-100">
@@ -442,8 +442,17 @@ const MarketplacePage = () => {
                       </div>
                     )}
 
-                    {/* Action Button */}
                     <motion.button
+                      onClick={() =>
+                        addToCart({
+                          id: product._id,
+                          name: product.name,
+                          price: product.price,
+                          image: product.imageUrl || "",
+                          quantity: 1,
+                          sellerId: product.seller?._id ?? "",
+                        })
+                      }
                       whileHover={{ scale: 1.02 }}
                       whileTap={{ scale: 0.98 }}
                       className="w-full bg-slate-900 text-white py-2.5 rounded-lg font-medium hover:bg-slate-800 transition-colors flex items-center justify-center gap-2"

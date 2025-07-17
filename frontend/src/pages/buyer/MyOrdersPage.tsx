@@ -1,9 +1,8 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { motion, AnimatePresence } from "framer-motion";
 import api from "../../api/axios";
 import {
-  Loader2,
   Package,
   CalendarDays,
   User,
@@ -102,6 +101,7 @@ const EmptyState = () => (
 
 const OrdersPage = () => {
   const { user, loadUserFromStorage } = useAuthStore();
+  const [visibleCount, setVisibleCount] = useState(3);
 
   useEffect(() => {
     loadUserFromStorage();
@@ -117,7 +117,6 @@ const OrdersPage = () => {
     queryKey: ["buyerOrders", userId],
     queryFn: async () => {
       const res = await api.get(`/orders/buyer/${userId}`);
-      console.log("Fetched orders:", res.data);
       return res.data;
     },
     enabled: !!userId,
@@ -126,13 +125,10 @@ const OrdersPage = () => {
   if (isLoading) {
     return (
       <div className="p-6 max-w-4xl mx-auto">
-        {/* Header Skeleton */}
         <div className="mb-8">
           <div className="h-8 bg-slate-200 rounded w-48 animate-pulse mb-2"></div>
           <div className="h-5 bg-slate-200 rounded w-64 animate-pulse"></div>
         </div>
-
-        {/* Order Skeletons */}
         <div className="space-y-4">
           {Array.from({ length: 3 }).map((_, i) => (
             <OrderSkeleton key={i} />
@@ -162,9 +158,14 @@ const OrdersPage = () => {
     );
   }
 
+  const sortedOrders = [...(orders || [])].sort(
+    (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+  );
+  const visibleOrders = sortedOrders.slice(0, visibleCount);
+  const hasMoreOrders = sortedOrders.length > visibleCount;
+
   return (
     <div className="p-6 max-w-4xl mx-auto">
-      {/* Header */}
       <motion.div
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
@@ -182,122 +183,133 @@ const OrdersPage = () => {
         </p>
       </motion.div>
 
-      {/* Orders List */}
       <AnimatePresence mode="wait">
-        {orders?.length === 0 ? (
+        {sortedOrders.length === 0 ? (
           <EmptyState />
         ) : (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className="space-y-4"
-          >
-            {orders?.map((order, index) => {
-              const product = order.products[0]; // simplified: one product per order
-              return (
-                <motion.div
-                  key={order._id}
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.5, delay: index * 0.1 }}
-                  whileHover={{ y: -2 }}
-                  className="group bg-white rounded-xl border border-slate-200 hover:border-slate-300 hover:shadow-lg transition-all duration-200"
+          <>
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              className="space-y-4"
+            >
+              {visibleOrders.map((order, index) => {
+                const product = order.products[0];
+                return (
+                  <motion.div
+                    key={order._id}
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.5, delay: index * 0.1 }}
+                    whileHover={{ y: -2 }}
+                    className="group bg-white rounded-xl border border-slate-200 hover:border-slate-300 hover:shadow-lg transition-all duration-200"
+                  >
+                    <div className="p-6">
+                      <div className="flex justify-between items-start mb-4">
+                        <div>
+                          <h3 className="text-lg font-semibold text-slate-900 mb-1 group-hover:text-slate-700 transition-colors">
+                            {product.productId.name}
+                          </h3>
+                          <div className="flex items-center gap-2">
+                            <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-slate-100 text-slate-700 border border-slate-200">
+                              {product.productId.type || "Product"}
+                            </span>
+                          </div>
+                        </div>
+                        <div
+                          className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm font-medium border ${getStatusColor(
+                            order.status
+                          )}`}
+                        >
+                          {getStatusIcon(order.status)}
+                          <span className="capitalize">{order.status}</span>
+                        </div>
+                      </div>
+
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                        <div className="space-y-2">
+                          <div className="flex items-center justify-between">
+                            <span className="text-sm text-slate-600">
+                              Quantity
+                            </span>
+                            <span className="text-sm font-medium text-slate-900">
+                              {product.quantity} items
+                            </span>
+                          </div>
+                          <div className="flex items-center justify-between">
+                            <span className="text-sm text-slate-600">
+                              Unit Price
+                            </span>
+                            <span className="text-sm font-medium text-slate-900">
+                              KES {product.productId.price.toLocaleString()}
+                            </span>
+                          </div>
+                          <div className="flex items-center justify-between pt-2 border-t border-slate-100">
+                            <span className="text-sm font-medium text-slate-900">
+                              Total
+                            </span>
+                            <span className="text-lg font-bold text-emerald-600">
+                              KES{" "}
+                              {(
+                                product.productId.price * product.quantity
+                              ).toLocaleString()}
+                            </span>
+                          </div>
+                        </div>
+
+                        <div className="space-y-3">
+                          <div className="flex items-center gap-2 text-sm text-slate-600">
+                            <User className="w-4 h-4 flex-shrink-0" />
+                            <span className="font-medium">Seller:</span>
+                            <span>{order.sellerId.name}</span>
+                          </div>
+                          <div className="flex items-center gap-2 text-sm text-slate-600">
+                            <CalendarDays className="w-4 h-4 flex-shrink-0" />
+                            <span className="font-medium">Ordered:</span>
+                            <span>
+                              {new Date(order.createdAt).toLocaleDateString(
+                                "en-US",
+                                {
+                                  year: "numeric",
+                                  month: "short",
+                                  day: "numeric",
+                                }
+                              )}
+                            </span>
+                          </div>
+                        </div>
+                      </div>
+
+                      <div className="pt-4 border-t border-slate-100">
+                        <div className="flex items-center justify-between">
+                          <span className="text-xs text-slate-500">
+                            Order ID: {order._id.slice(-8)}
+                          </span>
+                          <button className="text-sm text-slate-600 hover:text-slate-900 font-medium transition-colors">
+                            View Details
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  </motion.div>
+                );
+              })}
+            </motion.div>
+
+            {sortedOrders.length > 3 && (
+              <div className="mt-6 text-center">
+                <button
+                  onClick={() =>
+                    setVisibleCount(hasMoreOrders ? sortedOrders.length : 3)
+                  }
+                  className="text-sm font-medium text-slate-600 hover:text-slate-900 transition-colors"
                 >
-                  <div className="p-6">
-                    {/* Header */}
-                    <div className="flex justify-between items-start mb-4">
-                      <div>
-                        <h3 className="text-lg font-semibold text-slate-900 mb-1 group-hover:text-slate-700 transition-colors">
-                          {product.productId.name}
-                        </h3>
-                        <div className="flex items-center gap-2">
-                          <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-slate-100 text-slate-700 border border-slate-200">
-                            {product.productId.type || "Product"}
-                          </span>
-                        </div>
-                      </div>
-                      <div
-                        className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm font-medium border ${getStatusColor(
-                          order.status
-                        )}`}
-                      >
-                        {getStatusIcon(order.status)}
-                        <span className="capitalize">{order.status}</span>
-                      </div>
-                    </div>
-
-                    {/* Order Details */}
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-                      <div className="space-y-2">
-                        <div className="flex items-center justify-between">
-                          <span className="text-sm text-slate-600">
-                            Quantity
-                          </span>
-                          <span className="text-sm font-medium text-slate-900">
-                            {product.quantity} items
-                          </span>
-                        </div>
-                        <div className="flex items-center justify-between">
-                          <span className="text-sm text-slate-600">
-                            Unit Price
-                          </span>
-                          <span className="text-sm font-medium text-slate-900">
-                            KES {product.productId.price.toLocaleString()}
-                          </span>
-                        </div>
-                        <div className="flex items-center justify-between pt-2 border-t border-slate-100">
-                          <span className="text-sm font-medium text-slate-900">
-                            Total
-                          </span>
-                          <span className="text-lg font-bold text-emerald-600">
-                            KES{" "}
-                            {(
-                              product.productId.price * product.quantity
-                            ).toLocaleString()}
-                          </span>
-                        </div>
-                      </div>
-
-                      <div className="space-y-3">
-                        <div className="flex items-center gap-2 text-sm text-slate-600">
-                          <User className="w-4 h-4 flex-shrink-0" />
-                          <span className="font-medium">Seller:</span>
-                          <span>{order.sellerId.name}</span>
-                        </div>
-                        <div className="flex items-center gap-2 text-sm text-slate-600">
-                          <CalendarDays className="w-4 h-4 flex-shrink-0" />
-                          <span className="font-medium">Ordered:</span>
-                          <span>
-                            {new Date(order.createdAt).toLocaleDateString(
-                              "en-US",
-                              {
-                                year: "numeric",
-                                month: "short",
-                                day: "numeric",
-                              }
-                            )}
-                          </span>
-                        </div>
-                      </div>
-                    </div>
-
-                    {/* Footer */}
-                    <div className="pt-4 border-t border-slate-100">
-                      <div className="flex items-center justify-between">
-                        <span className="text-xs text-slate-500">
-                          Order ID: {order._id.slice(-8)}
-                        </span>
-                        <button className="text-sm text-slate-600 hover:text-slate-900 font-medium transition-colors">
-                          View Details
-                        </button>
-                      </div>
-                    </div>
-                  </div>
-                </motion.div>
-              );
-            })}
-          </motion.div>
+                  {hasMoreOrders ? "Show More" : "Show Less"}
+                </button>
+              </div>
+            )}
+          </>
         )}
       </AnimatePresence>
     </div>
