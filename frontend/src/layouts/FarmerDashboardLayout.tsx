@@ -26,7 +26,7 @@ const FarmerDashboardLayout = () => {
           <div className="bg-green-600 p-2 rounded-lg text-white">
             <Leaf className="w-6 h-6" />
           </div>
-          <h2 className="font-bold text-xl">FarmDash</h2>
+          <h2 className="font-bold text-xl">Umoja Farms</h2>
         </div>
 
         <nav className="space-y-2">

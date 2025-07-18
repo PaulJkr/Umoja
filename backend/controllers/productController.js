@@ -9,10 +9,12 @@ exports.createProduct = async (req, res) => {
     type,
     category,
     harvestDate,
-    imageUrl,
     certification,
   } = req.body;
   const { id: ownerId, role } = req.user;
+
+  // Get image URL from uploaded file
+  const imageUrl = req.file ? `/uploads/${req.file.filename}` : req.body.imageUrl;
 
   if (role === "supplier" && !certification) {
     return res

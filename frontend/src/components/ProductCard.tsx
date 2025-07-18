@@ -22,13 +22,34 @@ const ProductCard: React.FC<ProductCardProps> = ({
   showSellerInfo = true,
   showDelete = false,
 }) => {
+  // ✅ Use proxy - no need for full URL since Vite will proxy /uploads requests
+  const getImageUrl = (imageUrl: string | undefined): string => {
+    if (!imageUrl) return "";
+
+    // Since we have a proxy, just use the path directly
+    // Vite will automatically proxy /uploads requests to localhost:5000
+    if (imageUrl.startsWith("/uploads")) {
+      return imageUrl; // Use as-is
+    }
+
+    // If it doesn't start with /uploads, add it
+    return `/uploads/${imageUrl.replace(/^\/+/, "")}`;
+  };
+
   return (
     <div className="bg-white border rounded-lg p-4 shadow hover:shadow-md transition flex flex-col h-full">
       {product.imageUrl && (
         <img
-          src={product.imageUrl}
+          src={getImageUrl(product.imageUrl)}
           alt={product.name}
           className="w-full h-40 object-cover rounded mb-3"
+          onError={(e) => {
+            console.error("Image failed to load:", product.imageUrl);
+            e.currentTarget.style.display = "none";
+          }}
+          onLoad={() => {
+            // Image loaded successfully
+          }}
         />
       )}
 
@@ -90,6 +111,8 @@ const ProductCard: React.FC<ProductCardProps> = ({
           </button>
         )}
       </div>
+
+      {/* Debug info removed - everything working! */}
     </div>
   );
 };

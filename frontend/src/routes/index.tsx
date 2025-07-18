@@ -8,7 +8,7 @@ import MarketplacePage from "../pages/buyer/MarketplacePage";
 import ProfilePage from "../pages/buyer/ProfilePage";
 import AdminDashboard from "../pages/admin/Dashboard";
 import BuyerDashboard from "../pages/buyer/Dashboard";
-import FarmerDashboard from "../pages/farmer/Dashboard";
+//import FarmerDashboard from "../pages/farmer/Dashboard";
 import SupplierDashboard from "../pages/supplier/Dashboard";
 import CalendarPage from "../pages/buyer/CalendarPage";
 import MessagesPage from "../pages/buyer/MessagesPage";
@@ -16,6 +16,11 @@ import ExplorePage from "../pages/buyer/ExplorePage";
 import WishlistPage from "../pages/buyer/WishlistPage"; // ✅ NEW
 import Index from "../pages/Index";
 import CartPage from "../pages/buyer/CartPage";
+import AnalyticsPage from "../pages/farmer/AnalyticsPage";
+import OverviewPage from "../pages/farmer/OverviewPage";
+import ProductsPage from "../pages/farmer/ProductsPage";
+import CustomersPage from "../pages/farmer/CustomersPage";
+import FarmerDashboardLayout from "../layouts/FarmerDashboardLayout";
 
 const AppRoutes = () => {
   return (
@@ -30,10 +35,17 @@ const AppRoutes = () => {
         path="/farmer/dashboard"
         element={
           <ProtectedRoute allowedRoles={["farmer"]}>
-            <FarmerDashboard />
+            <FarmerDashboardLayout />
           </ProtectedRoute>
         }
-      />
+      >
+        <Route path="overview" element={<OverviewPage />} />
+        <Route path="products" element={<ProductsPage />} />
+        <Route path="orders" element={<OrdersPage />} />
+        <Route path="customers" element={<CustomersPage />} />
+        <Route path="analytics" element={<AnalyticsPage />} />
+        <Route path="calendar" element={<CalendarPage />} />  
+      </Route>
 
       {/* Buyer Dashboard with nested routes */}
       <Route

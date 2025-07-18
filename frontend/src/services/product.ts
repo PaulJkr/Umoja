@@ -38,8 +38,12 @@ export const useFarmerProducts = () =>
 export const useAddProduct = () => {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: async (data: Partial<Product>) => {
-      const res = await api.post("/products", data); // ✅ secure
+    mutationFn: async (data: FormData) => {
+      const res = await api.post("/products", data, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      });
       return res.data;
     },
     onSuccess: () => {
@@ -47,6 +51,7 @@ export const useAddProduct = () => {
     },
   });
 };
+
 
 // 🗑️ Delete a product
 export const useDeleteProduct = () => {

@@ -8,10 +8,13 @@ const productCtrl = require("../controllers/productController");
 router.get("/", productCtrl.getProducts);
 
 // Authenticated
+const upload = require("../middleware/upload");
+
 router.post(
   "/",
   verifyToken,
   allowRoles("farmer", "supplier"),
+  upload,
   productCtrl.createProduct
 );
 router.get("/mine", verifyToken, productCtrl.getMyProducts);
