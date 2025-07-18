@@ -1,7 +1,6 @@
 import { Routes, Route, Navigate } from "react-router-dom";
 import Login from "../pages/auth/Login";
 import Register from "../pages/auth/Register";
-
 import ProtectedRoute from "../components/ProtectedRoute";
 import OrdersPage from "../pages/buyer/MyOrdersPage";
 import MarketplacePage from "../pages/buyer/MarketplacePage";
@@ -13,7 +12,7 @@ import SupplierDashboard from "../pages/supplier/Dashboard";
 import CalendarPage from "../pages/buyer/CalendarPage";
 import MessagesPage from "../pages/buyer/MessagesPage";
 import ExplorePage from "../pages/buyer/ExplorePage";
-import WishlistPage from "../pages/buyer/WishlistPage"; // ✅ NEW
+import WishlistPage from "../pages/buyer/WishlistPage";
 import Index from "../pages/Index";
 import CartPage from "../pages/buyer/CartPage";
 import AnalyticsPage from "../pages/farmer/AnalyticsPage";
@@ -21,6 +20,7 @@ import OverviewPage from "../pages/farmer/OverviewPage";
 import ProductsPage from "../pages/farmer/ProductsPage";
 import CustomersPage from "../pages/farmer/CustomersPage";
 import FarmerDashboardLayout from "../layouts/FarmerDashboardLayout";
+import FarmerOrdersPage from "../pages/farmer/FarmerOrdersPage";
 
 const AppRoutes = () => {
   return (
@@ -41,7 +41,7 @@ const AppRoutes = () => {
       >
         <Route path="overview" element={<OverviewPage />} />
         <Route path="products" element={<ProductsPage />} />
-        <Route path="orders" element={<OrdersPage />} />
+        <Route path="orders" element={<FarmerOrdersPage />} />
         <Route path="customers" element={<CustomersPage />} />
         <Route path="analytics" element={<AnalyticsPage />} />
         <Route path="calendar" element={<CalendarPage />} />  
