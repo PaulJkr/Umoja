@@ -1,12 +1,12 @@
 import api from "../api/axios";
 import { useQuery } from "@tanstack/react-query";
 
-export const useFarmerAnalytics = (farmerId: string) => {
+export const useFarmerAnalytics = (farmerId: string | undefined) => {
   return useQuery({
     queryKey: ["farmerAnalytics", farmerId],
     queryFn: async () => {
       // Remove the extra /api since your base URL already includes it
-      const res = await api.get(`/orders/farmer/${farmerId}`);
+      const res = await api.get(`/orders/farmer/${farmerId as string}`);
       const orders = res.data;
 
       // Process the raw orders data into analytics
@@ -18,7 +18,21 @@ export const useFarmerAnalytics = (farmerId: string) => {
 };
 
 // Helper function to process orders into analytics data
-const processOrdersIntoAnalytics = (orders: any[]) => {
+interface ProductInOrder {
+  productId?: {
+    name?: string;
+    price?: number;
+  };
+  quantity?: number;
+}
+
+interface Order {
+  createdAt?: string;
+  date?: string;
+  products?: ProductInOrder[];
+}
+
+const processOrdersIntoAnalytics = (orders: Order[]) => {
   if (!orders || !Array.isArray(orders)) {
     return {
       salesTrend: {},
