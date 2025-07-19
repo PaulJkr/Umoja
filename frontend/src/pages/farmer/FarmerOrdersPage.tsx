@@ -347,7 +347,7 @@ const FarmerOrdersPage = () => {
         ) : (
           <div className="space-y-4">
             <AnimatePresence>
-              {displayedOrders?.map((order: Order, index) => (
+              {displayedOrders?.map((order: Order) => (
                 <OrderCard
                   key={order._id}
                   order={order}
@@ -406,13 +406,19 @@ const FarmerOrdersPage = () => {
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
                   <div className="text-center">
                     <p className="text-2xl font-bold text-amber-600">
-                      {orders.filter((o) => o.status === "pending").length}
+                      {
+                        orders.filter((o: Order) => o.status === "pending")
+                          .length
+                      }
                     </p>
                     <p className="text-sm text-gray-600 font-medium">Pending</p>
                   </div>
                   <div className="text-center">
                     <p className="text-2xl font-bold text-blue-600">
-                      {orders.filter((o) => o.status === "accepted").length}
+                      {
+                        orders.filter((o: Order) => o.status === "accepted")
+                          .length
+                      }
                     </p>
                     <p className="text-sm text-gray-600 font-medium">
                       Accepted
@@ -420,7 +426,10 @@ const FarmerOrdersPage = () => {
                   </div>
                   <div className="text-center">
                     <p className="text-2xl font-bold text-emerald-600">
-                      {orders.filter((o) => o.status === "success").length}
+                      {
+                        orders.filter((o: Order) => o.status === "success")
+                          .length
+                      }
                     </p>
                     <p className="text-sm text-gray-600 font-medium">
                       Completed
@@ -428,7 +437,10 @@ const FarmerOrdersPage = () => {
                   </div>
                   <div className="text-center">
                     <p className="text-2xl font-bold text-red-600">
-                      {orders.filter((o) => o.status === "declined").length}
+                      {
+                        orders.filter((o: Order) => o.status === "declined")
+                          .length
+                      }
                     </p>
                     <p className="text-sm text-gray-600 font-medium">
                       Declined
