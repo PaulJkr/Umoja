@@ -14,6 +14,10 @@ const FarmerProfileForm = () => {
   const [avatarFile, setAvatarFile] = useState<File | null>(null);
   const [loading, setLoading] = useState(false);
 
+  const [currentPassword, setCurrentPassword] = useState("");
+  const [newPassword, setNewPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+
   useEffect(() => {
     if (user) {
       setName(user.name);
@@ -37,20 +41,38 @@ const FarmerProfileForm = () => {
 
       const { data } = await axios.put(
         `/api/farmer/profile/${user?._id}`,
-        formData,
-        {
-          headers: {
-            "Content-Type": "multipart/form-data",
-          },
-        }
+        formData
       );
 
       setUser(data.updatedUser);
       toast.success("Profile updated!");
-    } catch (err: any) {
+    } catch (err) {
       toast.error("Failed to update profile");
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handlePasswordChange = async () => {
+    if (newPassword !== confirmPassword) {
+      toast.error("New passwords do not match");
+      return;
+    }
+
+    try {
+      await axios.put(`/api/farmer/change-password/${user?._id}`, {
+        currentPassword,
+        newPassword,
+      });
+
+      toast.success("Password updated!");
+      setCurrentPassword("");
+      setNewPassword("");
+      setConfirmPassword("");
+    } catch (err: any) {
+      toast.error(
+        err.response?.data?.msg || "Failed to update password"
+      );
     }
   };
 
@@ -63,33 +85,58 @@ const FarmerProfileForm = () => {
       <div className="grid gap-4">
         <div>
           <label className="block text-sm mb-1">Full Name</label>
-          <Input
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-            required
-          />
+          <Input value={name} onChange={(e) => setName(e.target.value)} required />
         </div>
         <div>
           <label className="block text-sm mb-1">Phone</label>
-          <Input
-            value={phone}
-            onChange={(e) => setPhone(e.target.value)}
-            required
-          />
+          <Input value={phone} onChange={(e) => setPhone(e.target.value)} required />
         </div>
         <div>
           <label className="block text-sm mb-1">Location</label>
-          <Input
-            value={location}
-            onChange={(e) => setLocation(e.target.value)}
-            required
-          />
+          <Input value={location} onChange={(e) => setLocation(e.target.value)} required />
         </div>
       </div>
 
       <Button type="submit" disabled={loading}>
         {loading ? "Saving..." : "Save Changes"}
       </Button>
+
+      {/* Password Section */}
+      <div className="mt-10 border-t pt-6 space-y-4">
+        <h3 className="text-lg font-semibold">Change Password</h3>
+
+        <div>
+          <label className="block text-sm mb-1">Current Password</label>
+          <Input
+            type="password"
+            value={currentPassword}
+            onChange={(e) => setCurrentPassword(e.target.value)}
+            required
+          />
+        </div>
+        <div>
+          <label className="block text-sm mb-1">New Password</label>
+          <Input
+            type="password"
+            value={newPassword}
+            onChange={(e) => setNewPassword(e.target.value)}
+            required
+          />
+        </div>
+        <div>
+          <label className="block text-sm mb-1">Confirm New Password</label>
+          <Input
+            type="password"
+            value={confirmPassword}
+            onChange={(e) => setConfirmPassword(e.target.value)}
+            required
+          />
+        </div>
+
+        <Button type="button" onClick={handlePasswordChange}>
+          Update Password
+        </Button>
+      </div>
     </form>
   );
 };
