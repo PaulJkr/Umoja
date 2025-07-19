@@ -6,6 +6,7 @@ export interface User {
   phone: string;
   role: "farmer" | "buyer" | "admin" | "supplier";
   location?: string;
+  avatar?: string;
 }
 
 interface AuthState {

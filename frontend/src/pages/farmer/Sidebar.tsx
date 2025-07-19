@@ -6,6 +6,7 @@ import {
   TrendingUp,
   Calendar,
   Users,
+  User,
   ChevronLeft,
   ChevronRight,
   LogOut,
@@ -22,6 +23,7 @@ const navItems = [
   { label: "Analytics", icon: TrendingUp, path: "analytics" },
   { label: "Calendar", icon: Calendar, path: "calendar" },
   { label: "Customers", icon: Users, path: "customers" },
+  { label: "Profile", icon: User, path: "profile" },
 ];
 
 const Sidebar = () => {

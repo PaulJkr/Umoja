@@ -7,7 +7,6 @@ import MarketplacePage from "../pages/buyer/MarketplacePage";
 import ProfilePage from "../pages/buyer/ProfilePage";
 import AdminDashboard from "../pages/admin/Dashboard";
 import BuyerDashboard from "../pages/buyer/Dashboard";
-//import FarmerDashboard from "../pages/farmer/Dashboard";
 import SupplierDashboard from "../pages/supplier/Dashboard";
 import CalendarPage from "../pages/buyer/CalendarPage";
 import MessagesPage from "../pages/buyer/MessagesPage";
@@ -21,6 +20,8 @@ import ProductsPage from "../pages/farmer/ProductsPage";
 import CustomersPage from "../pages/farmer/CustomersPage";
 import FarmerDashboardLayout from "../layouts/FarmerDashboardLayout";
 import FarmerOrdersPage from "../pages/farmer/FarmerOrdersPage";
+import { FarmerCalendarPage } from "../pages/farmer/FarmerCalendarPage";
+import { FarmerProfilePage } from "../pages/farmer/FarmerProfile";
 
 const AppRoutes = () => {
   return (
@@ -44,7 +45,8 @@ const AppRoutes = () => {
         <Route path="orders" element={<FarmerOrdersPage />} />
         <Route path="customers" element={<CustomersPage />} />
         <Route path="analytics" element={<AnalyticsPage />} />
-        <Route path="calendar" element={<CalendarPage />} />  
+        <Route path="calendar" element={<FarmerCalendarPage />} />
+        <Route path="profile" element={<FarmerProfilePage />} />
       </Route>
 
       {/* Buyer Dashboard with nested routes */}

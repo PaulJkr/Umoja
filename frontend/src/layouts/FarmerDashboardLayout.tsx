@@ -16,6 +16,7 @@ const tabs = [
   { id: "analytics", label: "Analytics", icon: TrendingUp },
   { id: "customers", label: "Customers", icon: Users },
   { id: "calendar", label: "Calendar", icon: Calendar },
+  { id: "profile", label: "Profile", icon: Users },
 ];
 
 const FarmerDashboardLayout = () => {
