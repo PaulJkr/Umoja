@@ -237,10 +237,6 @@ const BuyerDashboard = () => {
 
           <div className="flex items-center space-x-3">
             <button className="p-2 hover:bg-slate-100 rounded-lg text-slate-600 relative">
-              <Bell className="w-5 h-5" />
-              <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
-                3
-              </span>
             </button>
             <button className="p-2 hover:bg-slate-100 rounded-lg text-slate-600">
               <Settings className="w-5 h-5" />
