@@ -136,6 +136,15 @@ const Login = () => {
             Create one here <ArrowRight size={16} />
           </Link>
         </div>
+        <div className="text-center mt-6 text-sm">
+          <p className="text-gray-500 mb-1">Back to Home</p>
+          <Link
+            to="/"
+            className="text-green-600 font-semibold inline-flex items-center gap-1 hover:underline hover:text-green-700 transition"
+          >
+            Home Page <ArrowRight size={16} />
+          </Link>
+        </div>
       </div>
     </div>
   );

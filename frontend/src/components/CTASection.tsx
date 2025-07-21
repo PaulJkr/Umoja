@@ -118,7 +118,7 @@ export const CTASection = () => {
                 href="tel:+254700123456"
                 className="text-[#FF8C42] font-semibold hover:underline"
               >
-                +254 700 123 456
+                +254 713 177 390
               </a>
             </div>
 

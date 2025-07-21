@@ -76,12 +76,6 @@ export const Footer = () => {
                 </a>
               </li>
               <li>
-                <a
-                  href="#"
-                  className="text-gray-300 hover:text-[#FF8C42] transition-colors"
-                >
-                  Pricing
-                </a>
               </li>
               <li>
                 <a
@@ -92,12 +86,6 @@ export const Footer = () => {
                 </a>
               </li>
               <li>
-                <a
-                  href="#"
-                  className="text-gray-300 hover:text-[#FF8C42] transition-colors"
-                >
-                  Blog
-                </a>
               </li>
             </ul>
           </div>
@@ -110,7 +98,7 @@ export const Footer = () => {
                 <MapPin className="h-5 w-5 text-[#FF8C42] mt-1 flex-shrink-0" />
                 <div>
                   <p className="text-gray-300">Nairobi, Kenya</p>
-                  <p className="text-gray-300">Innovation Hub, Westlands</p>
+                  <p className="text-gray-300">Upperhill</p>
                 </div>
               </div>
               <div className="flex items-center space-x-3">
@@ -119,7 +107,7 @@ export const Footer = () => {
                   href="tel:+254700123456"
                   className="text-gray-300 hover:text-[#FF8C42] transition-colors"
                 >
-                  +254 700 123 456
+                  +254 713 177 390
                 </a>
               </div>
               <div className="flex items-center space-x-3">
@@ -153,7 +141,7 @@ export const Footer = () => {
         <div className="border-t border-gray-800 pt-8 mt-8">
           <div className="flex flex-col md:flex-row justify-between items-center space-y-4 md:space-y-0">
             <div className="text-gray-400 text-sm">
-              © 2024 Umoja Farms. All rights reserved. Proudly serving Kenya's
+              © 2025 Umoja Farms. All rights reserved. Proudly serving Kenya's
               agricultural community.
             </div>
             <div className="flex space-x-6 text-sm">
