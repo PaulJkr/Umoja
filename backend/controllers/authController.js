@@ -11,6 +11,11 @@ const generateToken = (user) => {
 exports.register = async (req, res) => {
   const { name, phone, password, role, location } = req.body;
   try {
+    // Block public admin registrations
+    if (role === "admin") {
+      return res.status(403).json({ msg: "Unauthorized to register as admin" });
+    }
+
     const exists = await User.findOne({ phone });
     if (exists) return res.status(400).json({ msg: "Phone already in use" });
 

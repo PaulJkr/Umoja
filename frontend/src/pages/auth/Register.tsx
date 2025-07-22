@@ -19,7 +19,7 @@ const registerSchema = z.object({
   name: z.string().min(2, "Name must be at least 2 characters"),
   phone: z.string().min(10, "Phone number required"),
   password: z.string().min(6, "Password must be at least 6 characters"),
-  role: z.enum(["farmer", "buyer", "admin", "supplier"], {
+  role: z.enum(["farmer", "buyer", "supplier"], {
     required_error: "Please select a role",
   }),
 });
@@ -165,8 +165,6 @@ const Register = () => {
                 <option value="">-- Select Your Role --</option>
                 <option value="farmer">Farmer</option>
                 <option value="buyer">Buyer</option>
-                <option value="supplier">Supplier</option>
-                <option value="admin">Admin</option>
               </select>
               <Users className="absolute left-3 top-2.5 text-gray-400 w-5 h-5" />
             </div>
