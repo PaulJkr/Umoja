@@ -23,6 +23,7 @@ import FarmerOrdersPage from "../pages/farmer/FarmerOrdersPage";
 import { FarmerCalendarPage } from "../pages/farmer/FarmerCalendarPage";
 import { FarmerProfilePage } from "../pages/farmer/FarmerProfile";
 import AdminOverview from "../pages/admin/overview/AdminOverview";
+import AdminUsers from "../pages/admin/users/AdminUsers";
 
 const AppRoutes = () => {
   return (
@@ -72,7 +73,7 @@ const AppRoutes = () => {
 
       {/* Admin Dashboard with nested routes */}
       <Route
-        path="/admin"
+        path="/admin/dashboard"
         element={
           <ProtectedRoute allowedRoles={["admin"]}>
             <AdminDashboard />
@@ -81,6 +82,7 @@ const AppRoutes = () => {
       >
         <Route index element={<Navigate to="overview" />} />
         <Route path="overview" element={<AdminOverview />} />
+        <Route path="users" element={<AdminUsers />} />
       </Route>
 
       {/* Supplier Dashboard */}

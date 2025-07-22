@@ -26,7 +26,7 @@ const limiter = rateLimit({ windowMs: 10 * 60 * 1000, max: 100 });
 app.use(limiter);
 
 const path = require("path");
-
+const adminRoutes = require("./routes/adminRoutes");
 // ✅ Serve uploaded images with proper CORS headers
 app.use(
   "/uploads",
@@ -75,6 +75,7 @@ app.use("/api/products", require("./routes/productRoutes"));
 app.use("/api/orders", require("./routes/orderRoutes"));
 app.use("/api/payments", require("./routes/paymentRoutes"));
 app.use("/api/users", require("./routes/userRoutes"));
+app.use("/api/admin", require("./routes/adminRoutes"));
 app.use("/api/calendar", require("./routes/calendarRoutes"));
 
 // Swagger Docs

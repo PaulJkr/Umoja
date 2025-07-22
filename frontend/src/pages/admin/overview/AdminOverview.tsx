@@ -1,68 +1,90 @@
+// src/pages/admin/AdminOverview.tsx
+
 import React from "react";
-import { Users, BarChart3, CheckCircle, ShieldCheck } from "lucide-react";
+import { useQuery } from "@tanstack/react-query";
+import {
+  Loader2,
+  Users,
+  ShoppingBag,
+  PackageSearch,
+  DollarSign,
+} from "lucide-react";
 import { motion } from "framer-motion";
 
-const adminStats = [
-  {
-    label: "Total Users",
-    value: "1,204",
-    icon: Users,
-    color: "bg-blue-100 text-blue-600",
-  },
-  {
-    label: "Reports Reviewed",
-    value: "318",
-    icon: BarChart3,
-    color: "bg-yellow-100 text-yellow-600",
-  },
-  {
-    label: "Approvals",
-    value: "87",
-    icon: CheckCircle,
-    color: "bg-green-100 text-green-600",
-  },
-  {
-    label: "Verified Sellers",
-    value: "42",
-    icon: ShieldCheck,
-    color: "bg-purple-100 text-purple-600",
-  },
-];
+import api from "../../../api/axios";
 
-const AdminOverview = () => {
-  return (
-    <div className="p-6 space-y-6">
-      <h1 className="text-2xl font-semibold text-gray-800">
-        Welcome Back, Admin
-      </h1>
-
-      <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4">
-        {adminStats.map((stat, index) => (
-          <motion.div
-            key={index}
-            className="p-4 rounded-lg shadow bg-white dark:bg-gray-900"
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: index * 0.1 }}
-          >
-            <div className="flex items-center space-x-4">
-              <div className={`p-2 rounded-full ${stat.color}`}>
-                <stat.icon className="w-5 h-5" />
-              </div>
-              <div>
-                <p className="text-sm text-gray-500 dark:text-gray-400">
-                  {stat.label}
-                </p>
-                <p className="text-lg font-bold text-gray-800 dark:text-white">
-                  {stat.value}
-                </p>
-              </div>
-            </div>
-          </motion.div>
-        ))}
-      </div>
-    </div>
-  );
+const fetchDashboardStats = async () => {
+  const res = await api.get("/admin/stats");
+  return res.data;
 };
 
-export default AdminOverview;
+const StatCard = ({ icon: Icon, label, value, color }: any) => (
+  <motion.div
+    initial={{ opacity: 0, y: 10 }}
+    animate={{ opacity: 1, y: 0 }}
+    transition={{ duration: 0.4 }}
+    className={`flex items-center gap-4 p-5 bg-white rounded-lg shadow border-l-4 ${color}`}
+  >
+    <div className="p-2 rounded-full bg-gray-100">
+      <Icon className="w-6 h-6 text-gray-700" />
+    </div>
+    <div>
+      <p className="text-sm text-gray-500">{label}</p>
+      <p className="text-lg font-semibold">{value}</p>
+    </div>
+  </motion.div>
+);
+
+export default function AdminOverview() {
+  const { data, isLoading, error } = useQuery({
+    queryKey: ["admin-dashboard"],
+    queryFn: fetchDashboardStats,
+  });
+
+  const stats = [
+    {
+      label: "Total Users",
+      value: data?.totalUsers || 0,
+      icon: Users,
+      color: "border-blue-500",
+    },
+    {
+      label: "Total Products",
+      value: data?.totalProducts || 0,
+      icon: ShoppingBag,
+      color: "border-green-500",
+    },
+    {
+      label: "Total Orders",
+      value: data?.totalOrders || 0,
+      icon: PackageSearch,
+      color: "border-yellow-500",
+    },
+    {
+      label: "Total Revenue",
+      value: `KSh ${data?.totalRevenue || 0}`,
+      icon: DollarSign,
+      color: "border-emerald-500",
+    },
+  ];
+
+  return (
+    <div className="p-6">
+      <h2 className="text-2xl font-bold mb-6">Admin Dashboard</h2>
+
+      {isLoading ? (
+        <div className="flex justify-center items-center h-32">
+          <Loader2 className="w-6 h-6 animate-spin" />
+        </div>
+      ) : error ? (
+        <p className="text-red-500">Failed to load dashboard data.</p>
+      ) : (
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-4">
+          {stats.map((stat, i) => (
+            <StatCard key={i} {...stat} />
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}

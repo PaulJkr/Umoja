@@ -16,11 +16,11 @@ import { Button } from "../../components/ui/button";
 import { LogoutConfirmation } from "../../components/LogoutConfirmation";
 
 const navItems = [
-  { name: "Overview", path: "/admin/overview", icon: LayoutDashboard },
-  { name: "Users", path: "/admin/users", icon: Users },
-  { name: "Reports", path: "/admin/reports", icon: FileBarChart },
-  { name: "Approvals", path: "/admin/approvals", icon: ShieldCheck },
-  { name: "Settings", path: "/admin/settings", icon: Settings },
+  { name: "Overview", path: "/admin/dashboard/overview", icon: LayoutDashboard },
+  { name: "Users", path: "/admin/dashboard/users", icon: Users },
+  { name: "Reports", path: "/admin/dashboard/reports", icon: FileBarChart },
+  { name: "Approvals", path: "/admin/dashboard/approvals", icon: ShieldCheck },
+  { name: "Settings", path: "/admin/dashboard/settings", icon: Settings },
 ];
 
 const AdminDashboard = () => {
