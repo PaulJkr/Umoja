@@ -22,6 +22,7 @@ import FarmerDashboardLayout from "../layouts/FarmerDashboardLayout";
 import FarmerOrdersPage from "../pages/farmer/FarmerOrdersPage";
 import { FarmerCalendarPage } from "../pages/farmer/FarmerCalendarPage";
 import { FarmerProfilePage } from "../pages/farmer/FarmerProfile";
+import AdminOverview from "../pages/admin/overview/AdminOverview";
 
 const AppRoutes = () => {
   return (
@@ -69,15 +70,18 @@ const AppRoutes = () => {
         <Route path="profile" element={<ProfilePage />} />
       </Route>
 
-      {/* Admin Dashboard */}
+      {/* Admin Dashboard with nested routes */}
       <Route
-        path="/admin/dashboard"
+        path="/admin"
         element={
           <ProtectedRoute allowedRoles={["admin"]}>
             <AdminDashboard />
           </ProtectedRoute>
         }
-      />
+      >
+        <Route index element={<Navigate to="overview" />} />
+        <Route path="overview" element={<AdminOverview />} />
+      </Route>
 
       {/* Supplier Dashboard */}
       <Route
