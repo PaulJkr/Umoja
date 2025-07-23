@@ -24,6 +24,7 @@ import { FarmerCalendarPage } from "../pages/farmer/FarmerCalendarPage";
 import { FarmerProfilePage } from "../pages/farmer/FarmerProfile";
 import AdminOverview from "../pages/admin/overview/AdminOverview";
 import AdminUsers from "../pages/admin/users/AdminUsers";
+import AdminProductsPage from "../pages/admin/products/AdminProducts";
 
 const AppRoutes = () => {
   return (
@@ -83,6 +84,7 @@ const AppRoutes = () => {
         <Route index element={<Navigate to="overview" />} />
         <Route path="overview" element={<AdminOverview />} />
         <Route path="users" element={<AdminUsers />} />
+        <Route path="products" element={<AdminProductsPage />} />
       </Route>
 
       {/* Supplier Dashboard */}

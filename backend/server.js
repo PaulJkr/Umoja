@@ -26,7 +26,7 @@ const limiter = rateLimit({ windowMs: 10 * 60 * 1000, max: 100 });
 app.use(limiter);
 
 const path = require("path");
-const adminRoutes = require("./routes/adminRoutes");
+
 // ✅ Serve uploaded images with proper CORS headers
 app.use(
   "/uploads",
