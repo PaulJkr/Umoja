@@ -3,43 +3,42 @@ const dotenv = require("dotenv");
 const helmet = require("helmet");
 const cors = require("cors");
 const rateLimit = require("express-rate-limit");
+const path = require("path");
 const connectDB = require("./config/db");
 
+// Load environment variables
 dotenv.config();
+
+// Connect to database
 connectDB();
 
+// Initialize app
 const app = express();
-app.use(express.json());
-app.use(helmet());
 
-// ✅ Updated CORS configuration - includes both frontend and backend ports
+// Middleware
+app.use(express.json());
+app.use(helmet({ crossOriginResourcePolicy: { policy: "cross-origin" } }));
+
+// CORS Configuration
 const corsOptions = {
   origin: ["http://localhost:5173", "http://localhost:5000"],
   methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
   allowedHeaders: ["Content-Type", "Authorization"],
   credentials: true,
 };
-
 app.use(cors(corsOptions));
 
-const limiter = rateLimit({ windowMs: 10 * 60 * 1000, max: 100 });
+// Rate limiting
+const limiter = rateLimit({
+  windowMs: 10 * 60 * 1000, // 10 minutes
+  max: 100, // Limit each IP to 100 requests per windowMs
+});
 app.use(limiter);
 
-const path = require("path");
+// Serve uploaded images with CORS and static path
+app.use("/uploads", express.static(path.join(__dirname, "/uploads")));
 
-// ✅ Serve uploaded images with proper CORS headers
-app.use(
-  "/uploads",
-  cors({
-    origin: ["http://localhost:5173", "http://localhost:5000"],
-    methods: ["GET"],
-    allowedHeaders: ["Content-Type", "Authorization"],
-    credentials: true,
-  }),
-  express.static(path.join(__dirname, "/uploads"))
-);
-
-// ✅ Optional: Debug route to check files (remove in production)
+// Debug: View uploaded files list (for development only)
 app.get("/debug/uploads", (req, res) => {
   const fs = require("fs");
   const uploadsPath = path.join(__dirname, "/uploads");
@@ -56,7 +55,7 @@ app.get("/debug/uploads", (req, res) => {
   }
 });
 
-// ✅ Debug route to check specific file
+// Debug: Check if specific file exists (for development only)
 app.get("/debug/file/:filename", (req, res) => {
   const fs = require("fs");
   const filePath = path.join(__dirname, "/uploads", req.params.filename);
@@ -78,7 +77,7 @@ app.use("/api/users", require("./routes/userRoutes"));
 app.use("/api/admin", require("./routes/adminRoutes"));
 app.use("/api/calendar", require("./routes/calendarRoutes"));
 
-// Swagger Docs
+// Swagger Documentation
 const swaggerUi = require("swagger-ui-express");
 const swaggerJsdoc = require("swagger-jsdoc");
 
@@ -117,8 +116,8 @@ const swaggerOptions = {
 const swaggerDocs = swaggerJsdoc(swaggerOptions);
 app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerDocs));
 
-// Root endpoint
-app.get("/", (req, res) => res.send("API is running ✅"));
+// Root route
+app.get("/", (req, res) => res.send("✅ Umoja API is running"));
 
 // Start server
 const PORT = process.env.PORT || 5000;

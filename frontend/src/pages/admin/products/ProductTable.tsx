@@ -67,7 +67,6 @@ const ProductTable = ({
                 )}
               </td>
               <td className="p-3">{product.name}</td>
-              <td className="p-3">{product.category}</td>
               <td className="p-3">{product.type}</td>
               <td className="p-3">{product.ownerId?.name || "Unknown"}</td>
               <td className="p-3">Ksh {product.price.toLocaleString()}</td>
