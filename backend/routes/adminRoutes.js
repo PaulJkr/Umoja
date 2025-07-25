@@ -10,6 +10,7 @@ const {
   getProducts,
   toggleStockStatus,
   getUserRoleCounts,
+  getRecentOrders,
 } = require("../controllers/adminController");
 const verifyToken = require("../middleware/auth");
 
@@ -26,6 +27,8 @@ const isAdmin = (req, res, next) => {
 };
 
 // Stats and Users
+router.get("/dashboard-stats", getDashboardStats);
+router.get("/recent-orders", getRecentOrders);
 router.get("/stats", verifyToken, isAdmin, getDashboardStats);
 router.get("/users", verifyToken, isAdmin, getAllUsers);
 router.get("/users/role-counts", getUserRoleCounts);

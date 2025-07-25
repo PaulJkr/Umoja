@@ -187,3 +187,44 @@ exports.getUserRoleCounts = async (req, res) => {
     res.status(500).json({ error: "Failed to get role counts" });
   }
 };
+exports.getDashboardStats = async (req, res) => {
+  try {
+    const [totalUsers, totalProducts, totalOrders, orders] = await Promise.all([
+      User.countDocuments(),
+      Product.countDocuments(),
+      Order.countDocuments(),
+      Order.find(),
+    ]);
+
+    const totalRevenue = orders.reduce((sum, order) => sum + order.total, 0);
+
+    res.json({ totalUsers, totalProducts, totalOrders, totalRevenue });
+  } catch (err) {
+    res.status(500).json({ error: "Failed to fetch dashboard stats" });
+  }
+};
+exports.getRecentOrders = async (req, res) => {
+  try {
+    const orders = await Order.find()
+      .sort({ createdAt: -1 })
+      .limit(10)
+      .populate("buyerId", "name")
+      .populate("sellerId", "name")
+      .populate("products.productId", "name");
+
+    const recentOrders = orders.map((order) => ({
+      _id: order._id,
+      buyerName: order.buyerId ? order.buyerId.name : 'N/A',
+      farmerName: order.sellerId ? order.sellerId.name : 'N/A',
+      total: order.totalAmount,
+      createdAt: order.createdAt,
+      products: order.products ? order.products.map((p) => ({
+        name: p.productId && p.productId.name ? p.productId.name : 'N/A',
+      })) : [],
+    }));
+
+    res.json(recentOrders);
+  } catch (err) {
+    res.status(500).json({ error: "Failed to fetch recent orders" });
+  }
+};

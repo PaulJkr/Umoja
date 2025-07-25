@@ -25,6 +25,7 @@ import { FarmerProfilePage } from "../pages/farmer/FarmerProfile";
 import AdminOverview from "../pages/admin/overview/AdminOverview";
 import AdminUsers from "../pages/admin/users/AdminUsers";
 import AdminProductsPage from "../pages/admin/products/AdminProducts";
+import AdminReports from "../pages/admin/reports/AdminReports";
 
 const AppRoutes = () => {
   return (
@@ -85,6 +86,7 @@ const AppRoutes = () => {
         <Route path="overview" element={<AdminOverview />} />
         <Route path="users" element={<AdminUsers />} />
         <Route path="products" element={<AdminProductsPage />} />
+        <Route path="reports" element={<AdminReports />} />
       </Route>
 
       {/* Supplier Dashboard */}
