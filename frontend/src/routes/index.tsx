@@ -26,6 +26,8 @@ import AdminOverview from "../pages/admin/overview/AdminOverview";
 import AdminUsers from "../pages/admin/users/AdminUsers";
 import AdminProductsPage from "../pages/admin/products/AdminProducts";
 import AdminReports from "../pages/admin/reports/AdminReports";
+import AdminApprovals from "../pages/admin/approvals/AdminApprovals";
+import AdminSettings from "../pages/admin/settings/AdminSettings";
 
 const AppRoutes = () => {
   return (
@@ -87,6 +89,8 @@ const AppRoutes = () => {
         <Route path="users" element={<AdminUsers />} />
         <Route path="products" element={<AdminProductsPage />} />
         <Route path="reports" element={<AdminReports />} />
+        <Route path="settings" element={<AdminSettings />} />
+        <Route path="approvals" element={<AdminApprovals />} />
       </Route>
 
       {/* Supplier Dashboard */}

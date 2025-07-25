@@ -1,6 +1,14 @@
+import { LucideProps } from "lucide-react";
+import { ForwardRefExoticComponent, RefAttributes } from "react";
+
 interface StatCardProps {
   title: string;
   value: string | number;
+  icon: ForwardRefExoticComponent<Omit<LucideProps, "ref"> & RefAttributes<SVGSVGElement>>;
+  color: string;
+  delay: number;
+  trend: "up" | "down";
+  trendValue: number;
 }
 
 const StatCard = ({ title, value }: StatCardProps) => {

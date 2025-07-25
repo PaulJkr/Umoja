@@ -11,6 +11,9 @@ const {
   toggleStockStatus,
   getUserRoleCounts,
   getRecentOrders,
+  getPendingApprovals,
+  getSettings,
+  updateSettings,
 } = require("../controllers/adminController");
 const verifyToken = require("../middleware/auth");
 
@@ -28,8 +31,10 @@ const isAdmin = (req, res, next) => {
 
 // Stats and Users
 router.get("/dashboard-stats", getDashboardStats);
+router.get("/users/role-counts", getUserRoleCounts);
 router.get("/recent-orders", getRecentOrders);
 router.get("/stats", verifyToken, isAdmin, getDashboardStats);
+router.get("/settings", verifyToken, isAdmin, getSettings);
 router.get("/users", verifyToken, isAdmin, getAllUsers);
 router.get("/users/role-counts", getUserRoleCounts);
 router.put("/users/:id/block", verifyToken, isAdmin, toggleUserBlock);
@@ -46,5 +51,10 @@ router.patch("/products/:id/stock", verifyToken, isAdmin, toggleStockStatus);
 
 // ✅ Products with filtering using Mongoose
 router.get("/products", verifyToken, isAdmin, getProducts);
+
+router.get("/pending-approvals", verifyToken, isAdmin, getPendingApprovals);
+
+router.get("/settings", verifyToken, isAdmin, getSettings);
+router.put("/settings", verifyToken, isAdmin, updateSettings);
 
 module.exports = router;
