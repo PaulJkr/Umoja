@@ -30,13 +30,31 @@ exports.getDashboardStats = async (req, res) => {
 
 exports.getAllUsers = async (req, res) => {
   try {
-    const users = await User.find({}, "-password"); // Exclude password from the result
+    const { search = "", role } = req.query;
+
+    const query = {};
+
+    // Optional text search
+    if (search) {
+      query.$or = [
+        { name: { $regex: search, $options: "i" } },
+        { phone: { $regex: search, $options: "i" } },
+      ];
+    }
+
+    // Optional role filter
+    if (role && role !== "all") {
+      query.role = role;
+    }
+
+    const users = await User.find(query, "-password"); // exclude password field
     res.json(users);
   } catch (err) {
     console.error("Get all users error:", err);
     res.status(500).json({ msg: "Server error while fetching users" });
   }
 };
+
 // Block or unblock a user
 exports.toggleUserBlock = async (req, res) => {
   try {
@@ -151,5 +169,21 @@ exports.deleteProduct = async (req, res) => {
   } catch (err) {
     console.error("Delete product error:", err);
     res.status(500).json({ msg: "Server error" });
+  }
+};
+exports.getUserRoleCounts = async (req, res) => {
+  try {
+    const counts = await User.aggregate([
+      { $group: { _id: "$role", count: { $sum: 1 } } },
+    ]);
+
+    const result = {};
+    counts.forEach((item) => {
+      result[item._id] = item.count;
+    });
+
+    res.json(result);
+  } catch (err) {
+    res.status(500).json({ error: "Failed to get role counts" });
   }
 };

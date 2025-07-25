@@ -9,6 +9,7 @@ const {
   toggleProductApproval,
   getProducts,
   toggleStockStatus,
+  getUserRoleCounts,
 } = require("../controllers/adminController");
 const verifyToken = require("../middleware/auth");
 
@@ -27,6 +28,7 @@ const isAdmin = (req, res, next) => {
 // Stats and Users
 router.get("/stats", verifyToken, isAdmin, getDashboardStats);
 router.get("/users", verifyToken, isAdmin, getAllUsers);
+router.get("/users/role-counts", getUserRoleCounts);
 router.put("/users/:id/block", verifyToken, isAdmin, toggleUserBlock);
 router.put("/users/:id/role", verifyToken, isAdmin, updateUserRole);
 router.put(
