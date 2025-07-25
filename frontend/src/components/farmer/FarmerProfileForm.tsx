@@ -4,7 +4,7 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { AvatarUploader } from "./AvatarUploader";
 import toast from "react-hot-toast";
-import axios from "axios";
+import api from "@/api/axios";
 
 const FarmerProfileForm = () => {
   const { user, setUser } = useAuthStore();
@@ -39,8 +39,8 @@ const FarmerProfileForm = () => {
         formData.append("avatar", avatarFile);
       }
 
-      const { data } = await axios.put(
-        `/api/farmer/profile/${user?._id}`,
+      const { data } = await api.put(
+        `/farmer/profile/${user?._id}`,
         formData
       );
 
@@ -60,7 +60,7 @@ const FarmerProfileForm = () => {
     }
 
     try {
-      await axios.put(`/api/farmer/change-password/${user?._id}`, {
+      await api.put(`/farmer/change-password/${user?._id}`, {
         currentPassword,
         newPassword,
       });

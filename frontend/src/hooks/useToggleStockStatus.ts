@@ -14,9 +14,8 @@ export const useToggleStockStatus = () => {
       inStock: boolean;
     }) => {
       const response = await api.patch(
-        `http://localhost:5000/api/admin/products/${productId}/stock`,
-        { inStock },
-        { withCredentials: true }
+        `/admin/products/${productId}/stock`,
+        { inStock }
       );
       return response.data;
     },

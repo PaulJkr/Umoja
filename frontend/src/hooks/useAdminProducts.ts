@@ -35,8 +35,7 @@ export const useAdminProducts = ({
       params.append("limit", limit.toString());
 
       const res = await api.get(
-        `http://localhost:5000/api/admin/products?${params.toString()}`,
-        { withCredentials: true }
+        `/admin/products?${params.toString()}`
       );
 
       return res.data;

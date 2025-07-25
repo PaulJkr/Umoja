@@ -1,5 +1,5 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import axios from "axios";
+import api from "../api/axios";
 import { toast } from "sonner";
 
 export const useDeleteProduct = () => {
@@ -7,9 +7,8 @@ export const useDeleteProduct = () => {
 
   return useMutation({
     mutationFn: async (productId: string) => {
-      const response = await axios.delete(
-        `http://localhost:5000/api/admin/products/${productId}`,
-        { withCredentials: true }
+      const response = await api.delete(
+        `/admin/products/${productId}`
       );
       return response.data;
     },

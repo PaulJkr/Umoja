@@ -1,7 +1,7 @@
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
-import axios from "axios";
+import api from "../../api/axios";
 import { useNavigate, Link } from "react-router-dom";
 import { useAuthStore, User } from "../../context/authStore";
 import {
@@ -43,8 +43,8 @@ const Register = () => {
   const onSubmit = async (data: RegisterInput) => {
     setLoading(true);
     try {
-      const res = await axios.post<{ user: User; token: string }>(
-        "/api/auth/register",
+      const res = await api.post<{ user: User; token: string }>(
+        "/auth/register",
         data
       );
       setUser(res.data.user);
