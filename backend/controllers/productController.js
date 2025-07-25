@@ -111,7 +111,14 @@ exports.deleteProduct = async (req, res) => {
   }
 };
 
-// Admin: verify product
+exports.getProductsForAdmin = async (req, res) => {
+  try {
+    const products = await Product.find({}).populate("ownerId", "name");
+    res.json(products);
+  } catch (err) {
+    res.status(500).json({ msg: "Error fetching products for admin" });
+  }
+};
 exports.verifyProduct = async (req, res) => {
   const { id } = req.params;
   try {

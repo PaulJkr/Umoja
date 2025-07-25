@@ -21,6 +21,8 @@ router.get("/mine", verifyToken, productCtrl.getMyProducts);
 router.put("/:id", verifyToken, productCtrl.updateProduct);
 router.delete("/:id", verifyToken, productCtrl.deleteProduct);
 
+router.get("/admin", productCtrl.getProductsForAdmin);
+
 // Admin only
 router.put(
   "/verify/:id",

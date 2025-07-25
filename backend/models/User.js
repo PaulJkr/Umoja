@@ -12,6 +12,10 @@ const userSchema = new mongoose.Schema(
     },
     location: String,
     profileData: Object,
+    blocked: {
+      type: Boolean,
+      default: false,
+    },
   },
   { timestamps: true }
 );

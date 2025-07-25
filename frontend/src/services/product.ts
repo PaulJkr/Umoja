@@ -16,6 +16,7 @@ export interface Product {
   name: string;
   price: number;
   quantity: number;
+  inStock: boolean;
   category?: string;
   type: "produce" | "seed" | "fertilizer";
   imageUrl?: string;
@@ -24,7 +25,12 @@ export interface Product {
   verified?: boolean;
   seller?: Seller; // Add optional seller info
 }
-// 🔍 Fetch all products owned by the logged-in farmer/supplier
+export interface AdminProduct extends Product {
+  ownerId?: {
+    _id: string;
+    name: string;
+  };
+}
 export const useFarmerProducts = () =>
   useQuery<Product[]>({
     queryKey: ["myProducts"],
@@ -87,10 +93,10 @@ export const useUpdateProduct = () => {
 };
 // 🌍 Fetch all products (for buyer view)
 export const useAllProducts = () =>
-  useQuery<Product[]>({
+  useQuery<AdminProduct[]>({
     queryKey: ["allProducts"],
     queryFn: async () => {
-      const res = await api.get("/products"); // 📣 Public endpoint for all products
+      const res = await api.get("/products/admin"); // 📣 Public endpoint for all products
       return res.data;
     },
   });
