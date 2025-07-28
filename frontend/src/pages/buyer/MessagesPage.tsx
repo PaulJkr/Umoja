@@ -230,7 +230,7 @@ const MessagesPage = () => {
                     y: -4,
                     transition: { duration: 0.2 },
                   }}
-                  className="bg-white rounded-2xl shadow-sm border border-gray-200/60 overflow-hidden hover:shadow-lg transition-all duration-300"
+                  className="bg-white rounded-2xl shadow-sm border border-gray-200/60 hover:shadow-lg transition-all duration-300 flex flex-col justify-between min-h-[280px]"
                 >
                   {/* Card Header */}
                   <div className="p-6 pb-4">

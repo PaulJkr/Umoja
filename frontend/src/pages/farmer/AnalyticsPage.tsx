@@ -149,10 +149,6 @@ const AnalyticsPage = () => {
                   <div className="p-3 bg-emerald-100 rounded-xl">
                     <DollarSign className="w-5 h-5 text-emerald-600" />
                   </div>
-                  <div className="flex items-center gap-1 text-sm font-medium text-emerald-600">
-                    <TrendingUp className="w-4 h-4" />
-                    <span>+12%</span>
-                  </div>
                 </div>
                 <StatCard
                   title="Total Revenue"
@@ -178,10 +174,6 @@ const AnalyticsPage = () => {
                   <div className="p-3 bg-blue-100 rounded-xl">
                     <ShoppingCart className="w-5 h-5 text-blue-600" />
                   </div>
-                  <div className="flex items-center gap-1 text-sm font-medium text-blue-600">
-                    <TrendingUp className="w-4 h-4" />
-                    <span>+8%</span>
-                  </div>
                 </div>
                 <StatCard title="Total Orders" value={data.totalOrders} />
               </div>
@@ -204,10 +196,7 @@ const AnalyticsPage = () => {
                   <div className="p-3 bg-purple-100 rounded-xl">
                     <BarChart3 className="w-5 h-5 text-purple-600" />
                   </div>
-                  <div className="flex items-center gap-1 text-sm font-medium text-purple-600">
-                    <TrendingUp className="w-4 h-4" />
-                    <span>+15%</span>
-                  </div>
+
                 </div>
                 <div>
                   <p className="text-sm font-medium text-gray-600 mb-1">
@@ -238,10 +227,6 @@ const AnalyticsPage = () => {
                 <div className="flex items-center justify-between mb-4">
                   <div className="p-3 bg-orange-100 rounded-xl">
                     <TrendingUp className="w-5 h-5 text-orange-600" />
-                  </div>
-                  <div className="flex items-center gap-1 text-sm font-medium text-orange-600">
-                    <TrendingUp className="w-4 h-4" />
-                    <span>+23%</span>
                   </div>
                 </div>
                 <div>

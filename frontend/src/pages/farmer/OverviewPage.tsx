@@ -155,8 +155,6 @@ const OverviewPage = () => {
             icon={<Package className="w-5 h-5" />}
             title="Total Products"
             value={products.length.toString()}
-            trend="+12%"
-            trendDirection="up"
             color="emerald"
             index={0}
           />
@@ -164,8 +162,6 @@ const OverviewPage = () => {
             icon={<BarChart className="w-5 h-5" />}
             title="Total Sales"
             value={`KES ${totalSales.toLocaleString()}`}
-            trend="+23%"
-            trendDirection="up"
             color="blue"
             index={1}
           />
@@ -173,8 +169,6 @@ const OverviewPage = () => {
             icon={<Users className="w-5 h-5" />}
             title="Total Orders"
             value={totalOrders.toString()}
-            trend="+8%"
-            trendDirection="up"
             color="purple"
             index={2}
           />

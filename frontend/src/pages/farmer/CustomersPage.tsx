@@ -321,21 +321,18 @@ const CustomersPage = () => {
                 title="Total Customers"
                 value={customersList.length}
                 color="from-blue-500 to-blue-600"
-                trend="+12%"
               />
               <StatCard
                 icon={ShoppingCart}
                 title="Total Orders"
                 value={totalOrders}
                 color="from-emerald-500 to-emerald-600"
-                trend="+8%"
               />
               <StatCard
                 icon={DollarSign}
                 title="Total Revenue"
                 value={`KES ${totalRevenue.toLocaleString()}`}
                 color="from-purple-500 to-purple-600"
-                trend="+23%"
               />
             </motion.div>
 
