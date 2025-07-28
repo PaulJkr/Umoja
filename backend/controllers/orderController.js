@@ -1,4 +1,5 @@
 const Order = require("../models/Order");
+const Product = require("../models/Product");
 const Transaction = require("../models/Transaction");
 const User = require("../models/User"); // ✅ Needed to get seller's phone
 const sendSMS = require("../utils/smsSimulator");
@@ -38,6 +39,15 @@ exports.placeOrder = async (req, res) => {
     order.status = "success";
     order.transactionId = fakeTransactionId;
     await order.save();
+
+    // Update product quantities
+    for (const item of cartItems) {
+      const product = await Product.findById(item._id);
+      if (product) {
+        product.quantity -= item.quantity;
+        await product.save();
+      }
+    }
 
     // ✅ Send SMS to buyer
     sendSMS(
