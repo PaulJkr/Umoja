@@ -78,11 +78,11 @@ router.get("/password-status/:id", async (req, res) => {
     }
 
     console.log(
-      `Password status check for user ${id}: has password = ${!!user.password}`
+      `Password status check for user ${id}: has password = ${!!user.passwordHash}`
     );
 
     res.json({
-      hasPassword: !!user.password,
+      hasPassword: !!user.passwordHash,
       userId: id,
     });
   } catch (error) {
@@ -123,13 +123,13 @@ router.put("/change-password/:id", async (req, res) => {
     // ✅ Debug: Check what we have
     console.log("User found:", {
       id: user._id,
-      hasPassword: !!user.password,
-      passwordType: typeof user.password,
+      hasPassword: !!user.passwordHash,
+      passwordType: typeof user.passwordHash,
       hasCompareMethod: typeof user.comparePassword,
     });
 
     // ✅ Handle two cases: setting initial password OR changing existing password
-    if (!user.password) {
+    if (!user.passwordHash) {
       // Case 1: User has no password set - allow setting initial password
       console.log("Setting initial password for user");
 
@@ -139,7 +139,7 @@ router.put("/change-password/:id", async (req, res) => {
 
         const updatedUser = await User.findByIdAndUpdate(
           req.params.id,
-          { password: hashedPassword },
+          { passwordHash: hashedPassword },
           { new: true }
         );
 
@@ -177,7 +177,7 @@ router.put("/change-password/:id", async (req, res) => {
         ) {
           isMatch = await user.comparePassword(currentPassword);
         } else {
-          isMatch = await bcrypt.compare(currentPassword, user.password);
+          isMatch = await bcrypt.compare(currentPassword, user.passwordHash);
         }
       } catch (compareError) {
         console.error("Error comparing passwords:", compareError);
@@ -198,7 +198,7 @@ router.put("/change-password/:id", async (req, res) => {
 
         const updatedUser = await User.findByIdAndUpdate(
           req.params.id,
-          { password: hashedPassword },
+          { passwordHash: hashedPassword },
           { new: true }
         );
 
