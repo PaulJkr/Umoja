@@ -28,7 +28,7 @@ import { Button } from "../../../components/ui/button";
 
 const AdminReports = () => {
   const [dateRange, setDateRange] = useState("30");
-  
+
   const { data: stats, isLoading: loadingStats } = useQuery({
     queryKey: ["admin-dashboard-stats"],
     queryFn: async () => {
@@ -73,9 +73,14 @@ const AdminReports = () => {
       className="space-y-8"
     >
       {/* Header */}
-      <motion.div variants={itemVariants} className="flex items-center justify-between">
+      <motion.div
+        variants={itemVariants}
+        className="flex items-center justify-between"
+      >
         <div>
-          <h1 className="text-3xl font-bold text-slate-900">Reports & Analytics</h1>
+          <h1 className="text-3xl font-bold text-slate-900">
+            Reports & Analytics
+          </h1>
           <p className="text-slate-600 mt-1">
             Comprehensive insights into your platform performance
           </p>
@@ -102,10 +107,16 @@ const AdminReports = () => {
       </motion.div>
 
       {/* Key Metrics */}
-      <motion.div variants={itemVariants} className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+      <motion.div
+        variants={itemVariants}
+        className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6"
+      >
         {loadingStats ? (
           [...Array(4)].map((_, i) => (
-            <div key={i} className="bg-white rounded-xl p-6 border border-slate-200">
+            <div
+              key={i}
+              className="bg-white rounded-xl p-6 border border-slate-200"
+            >
               <div className="flex items-center gap-4">
                 <Skeleton className="h-12 w-12 rounded-xl" />
                 <div className="space-y-2 flex-1">
@@ -159,7 +170,10 @@ const AdminReports = () => {
       </motion.div>
 
       {/* Quick Reports */}
-      <motion.div variants={itemVariants} className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+      <motion.div
+        variants={itemVariants}
+        className="grid grid-cols-1 lg:grid-cols-3 gap-6"
+      >
         <QuickReportCard
           title="User Growth"
           description="Monthly user registration trends"
@@ -181,12 +195,19 @@ const AdminReports = () => {
       </motion.div>
 
       {/* Recent Orders */}
-      <motion.div variants={itemVariants} className="bg-white rounded-xl border border-slate-200 shadow-sm">
+      <motion.div
+        variants={itemVariants}
+        className="bg-white rounded-xl border border-slate-200 shadow-sm"
+      >
         <div className="px-6 py-4 border-b border-slate-200">
           <div className="flex items-center justify-between">
             <div>
-              <h2 className="text-xl font-semibold text-slate-900">Recent Orders</h2>
-              <p className="text-sm text-slate-600 mt-1">Latest transactions on the platform</p>
+              <h2 className="text-xl font-semibold text-slate-900">
+                Recent Orders
+              </h2>
+              <p className="text-sm text-slate-600 mt-1">
+                Latest transactions on the platform
+              </p>
             </div>
             <div className="flex gap-2">
               <Button variant="outline" size="sm" className="gap-2">
@@ -226,20 +247,36 @@ const AdminReports = () => {
               <div className="w-12 h-12 bg-slate-100 rounded-full flex items-center justify-center mx-auto mb-3">
                 <AlertTriangle className="w-6 h-6 text-slate-400" />
               </div>
-              <h3 className="text-lg font-medium text-slate-900 mb-1">No recent orders</h3>
-              <p className="text-slate-500 text-sm">Orders will appear here once customers start purchasing.</p>
+              <h3 className="text-lg font-medium text-slate-900 mb-1">
+                No recent orders
+              </h3>
+              <p className="text-slate-500 text-sm">
+                Orders will appear here once customers start purchasing.
+              </p>
             </motion.div>
           ) : (
             <div className="overflow-x-auto">
               <table className="w-full">
                 <thead className="border-b border-slate-200">
                   <tr>
-                    <th className="px-4 py-3 text-left text-sm font-semibold text-slate-900">Customer</th>
-                    <th className="px-4 py-3 text-left text-sm font-semibold text-slate-900">Farmer</th>
-                    <th className="px-4 py-3 text-left text-sm font-semibold text-slate-900">Products</th>
-                    <th className="px-4 py-3 text-left text-sm font-semibold text-slate-900">Total</th>
-                    <th className="px-4 py-3 text-left text-sm font-semibold text-slate-900">Date</th>
-                    <th className="px-4 py-3 text-left text-sm font-semibold text-slate-900">Status</th>
+                    <th className="px-4 py-3 text-left text-sm font-semibold text-slate-900">
+                      Customer
+                    </th>
+                    <th className="px-4 py-3 text-left text-sm font-semibold text-slate-900">
+                      Farmer
+                    </th>
+                    <th className="px-4 py-3 text-left text-sm font-semibold text-slate-900">
+                      Products
+                    </th>
+                    <th className="px-4 py-3 text-left text-sm font-semibold text-slate-900">
+                      Total
+                    </th>
+                    <th className="px-4 py-3 text-left text-sm font-semibold text-slate-900">
+                      Date
+                    </th>
+                    <th className="px-4 py-3 text-left text-sm font-semibold text-slate-900">
+                      Status
+                    </th>
                   </tr>
                 </thead>
                 <tbody>
@@ -257,22 +294,29 @@ const AdminReports = () => {
                             <div className="w-8 h-8 bg-gradient-to-br from-blue-500 to-blue-600 rounded-full flex items-center justify-center">
                               <User size={14} className="text-white" />
                             </div>
-                            <span className="font-medium text-slate-900">{order.buyerName}</span>
+                            <span className="font-medium text-slate-900">
+                              {order.buyerName}
+                            </span>
                           </div>
                         </td>
                         <td className="px-4 py-4">
                           <div className="flex items-center gap-2">
                             <div className="w-2 h-2 bg-green-500 rounded-full"></div>
-                            <span className="text-slate-700">{order.farmerName}</span>
+                            <span className="text-slate-700">
+                              {order.farmerName}
+                            </span>
                           </div>
                         </td>
                         <td className="px-4 py-4">
                           <div className="max-w-xs">
                             <p className="text-slate-900 truncate">
-                              {order.products.map((p: any) => p.name).join(", ")}
+                              {order.products
+                                .map((p: any) => p.name)
+                                .join(", ")}
                             </p>
                             <p className="text-xs text-slate-500 mt-1">
-                              {order.products.length} item{order.products.length > 1 ? 's' : ''}
+                              {order.products.length} item
+                              {order.products.length > 1 ? "s" : ""}
                             </p>
                           </div>
                         </td>
@@ -288,10 +332,13 @@ const AdminReports = () => {
                           <div className="flex items-center gap-1 text-slate-600">
                             <Calendar size={12} />
                             <span className="text-sm">
-                              {new Date(order.createdAt).toLocaleDateString("en-US", {
-                                month: "short",
-                                day: "numeric",
-                              })}
+                              {new Date(order.createdAt).toLocaleDateString(
+                                "en-US",
+                                {
+                                  month: "short",
+                                  day: "numeric",
+                                }
+                              )}
                             </span>
                           </div>
                         </td>
@@ -341,18 +388,22 @@ const EnhancedStatCard = ({
     <div className="absolute top-0 right-0 w-16 h-16 opacity-5">
       <Icon className="w-full h-full" />
     </div>
-    
+
     <div className="relative">
       <div className="flex items-start justify-between mb-4">
-        <div className={`p-3 rounded-xl ${color} group-hover:scale-110 transition-transform duration-300`}>
+        <div
+          className={`p-3 rounded-xl ${color} group-hover:scale-110 transition-transform duration-300`}
+        >
           <Icon className="w-6 h-6 text-white" />
         </div>
-        <div className={`flex items-center gap-1 px-2 py-1 rounded-full text-xs font-medium ${
-          trend === 'up' 
-            ? 'bg-emerald-50 text-emerald-700' 
-            : 'bg-red-50 text-red-700'
-        }`}>
-          {trend === 'up' ? (
+        <div
+          className={`flex items-center gap-1 px-2 py-1 rounded-full text-xs font-medium ${
+            trend === "up"
+              ? "bg-emerald-50 text-emerald-700"
+              : "bg-red-50 text-red-700"
+          }`}
+        >
+          {trend === "up" ? (
             <ArrowUpRight size={12} />
           ) : (
             <ArrowDownRight size={12} />
@@ -360,11 +411,11 @@ const EnhancedStatCard = ({
           {trendValue}%
         </div>
       </div>
-      
+
       <div className="space-y-1">
         <p className="text-sm font-medium text-slate-600">{label}</p>
         <p className="text-2xl font-bold text-slate-900 group-hover:text-slate-800 transition-colors">
-          {typeof value === 'number' ? value.toLocaleString() : value}
+          {typeof value === "number" ? value.toLocaleString() : value}
         </p>
       </div>
     </div>
@@ -386,7 +437,9 @@ const QuickReportCard = ({
     whileHover={{ y: -4, transition: { duration: 0.2 } }}
     className="bg-white rounded-xl p-6 border border-slate-200 shadow-sm hover:shadow-lg transition-all duration-300 cursor-pointer group"
   >
-    <div className={`w-12 h-12 rounded-xl bg-gradient-to-br ${color} flex items-center justify-center mb-4 group-hover:scale-110 transition-transform duration-300`}>
+    <div
+      className={`w-12 h-12 rounded-xl bg-gradient-to-br ${color} flex items-center justify-center mb-4 group-hover:scale-110 transition-transform duration-300`}
+    >
       <Icon className="w-6 h-6 text-white" />
     </div>
     <h3 className="text-lg font-semibold text-slate-900 mb-2 group-hover:text-slate-700 transition-colors">
@@ -395,7 +448,10 @@ const QuickReportCard = ({
     <p className="text-slate-600 text-sm mb-4">{description}</p>
     <div className="flex items-center gap-2 text-indigo-600 text-sm font-medium group-hover:gap-3 transition-all duration-200">
       <span>View Report</span>
-      <ArrowUpRight size={14} className="group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform duration-200" />
+      <ArrowUpRight
+        size={14}
+        className="group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform duration-200"
+      />
     </div>
   </motion.div>
 );

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useMemo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useFarmerOrders, useUpdateOrderStatus } from "../../services/order";
 import {
@@ -271,9 +271,20 @@ const FarmerOrdersPage = () => {
     updateStatus({ orderId: id, status });
   };
 
+  // Sort orders by createdAt date in descending order (latest first)
+  const sortedOrders = useMemo(() => {
+    if (!orders) return [];
+
+    return [...orders].sort((a, b) => {
+      const dateA = new Date(a.createdAt).getTime();
+      const dateB = new Date(b.createdAt).getTime();
+      return dateB - dateA; // Descending order (latest first)
+    });
+  }, [orders]);
+
   // Show first 8 orders by default, all if showAll is true
-  const displayedOrders = showAll ? orders : orders?.slice(0, 8);
-  const hasMoreOrders = orders && orders.length > 8;
+  const displayedOrders = showAll ? sortedOrders : sortedOrders?.slice(0, 8);
+  const hasMoreOrders = sortedOrders && sortedOrders.length > 8;
 
   if (isLoading) {
     return (
@@ -311,12 +322,12 @@ const FarmerOrdersPage = () => {
               </p>
             </div>
 
-            {orders && orders.length > 0 && (
+            {sortedOrders && sortedOrders.length > 0 && (
               <div className="flex items-center gap-4">
                 <div className="bg-white rounded-xl px-4 py-2 border border-gray-200">
                   <span className="text-sm text-gray-600">Total Orders: </span>
                   <span className="font-semibold text-gray-900">
-                    {orders.length}
+                    {sortedOrders.length}
                   </span>
                 </div>
               </div>
@@ -325,7 +336,7 @@ const FarmerOrdersPage = () => {
         </motion.div>
 
         {/* Orders List */}
-        {!orders || orders?.length === 0 ? (
+        {!sortedOrders || sortedOrders?.length === 0 ? (
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -376,7 +387,7 @@ const FarmerOrdersPage = () => {
                       <ChevronUp className="w-4 h-4" />
                       Show Less
                       <span className="text-sm text-gray-500 ml-1">
-                        (Hide {orders.length - 8} orders)
+                        (Hide {sortedOrders.length - 8} orders)
                       </span>
                     </>
                   ) : (
@@ -384,7 +395,7 @@ const FarmerOrdersPage = () => {
                       <ChevronDown className="w-4 h-4" />
                       Show More
                       <span className="text-sm text-gray-500 ml-1">
-                        ({orders.length - 8} more orders)
+                        ({sortedOrders.length - 8} more orders)
                       </span>
                     </>
                   )}
@@ -393,7 +404,7 @@ const FarmerOrdersPage = () => {
             )}
 
             {/* Orders Summary */}
-            {orders && orders.length > 0 && (
+            {sortedOrders && sortedOrders.length > 0 && (
               <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
@@ -407,8 +418,9 @@ const FarmerOrdersPage = () => {
                   <div className="text-center">
                     <p className="text-2xl font-bold text-amber-600">
                       {
-                        orders.filter((o: Order) => o.status === "pending")
-                          .length
+                        sortedOrders.filter(
+                          (o: Order) => o.status === "pending"
+                        ).length
                       }
                     </p>
                     <p className="text-sm text-gray-600 font-medium">Pending</p>
@@ -416,8 +428,9 @@ const FarmerOrdersPage = () => {
                   <div className="text-center">
                     <p className="text-2xl font-bold text-blue-600">
                       {
-                        orders.filter((o: Order) => o.status === "accepted")
-                          .length
+                        sortedOrders.filter(
+                          (o: Order) => o.status === "accepted"
+                        ).length
                       }
                     </p>
                     <p className="text-sm text-gray-600 font-medium">
@@ -427,8 +440,9 @@ const FarmerOrdersPage = () => {
                   <div className="text-center">
                     <p className="text-2xl font-bold text-emerald-600">
                       {
-                        orders.filter((o: Order) => o.status === "success")
-                          .length
+                        sortedOrders.filter(
+                          (o: Order) => o.status === "success"
+                        ).length
                       }
                     </p>
                     <p className="text-sm text-gray-600 font-medium">
@@ -438,8 +452,9 @@ const FarmerOrdersPage = () => {
                   <div className="text-center">
                     <p className="text-2xl font-bold text-red-600">
                       {
-                        orders.filter((o: Order) => o.status === "declined")
-                          .length
+                        sortedOrders.filter(
+                          (o: Order) => o.status === "declined"
+                        ).length
                       }
                     </p>
                     <p className="text-sm text-gray-600 font-medium">

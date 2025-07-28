@@ -320,7 +320,6 @@ exports.getPendingApprovals = async (req, res) => {
 
 const sendSMS = require("../utils/smsSimulator");
 
-// ... (rest of the file)
 
 // PATCH /admin/approve-user/:id
 exports.approveUser = async (req, res) => {
