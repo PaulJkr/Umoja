@@ -16,6 +16,7 @@ import {
   ChevronLeft,
   ChevronRight,
   ShoppingCart,
+  Newspaper,
 } from "lucide-react";
 import { useAuthStore } from "../../context/authStore";
 import { useWishlistStore } from "../../context/wishlistStore";
@@ -64,6 +65,12 @@ const BuyerDashboard = () => {
       id: "calendar",
       label: "Calendar",
       icon: CalendarDays,
+    },
+    {
+      id: "news",
+      label: "News",
+      icon: Newspaper,
+      badge: newSellersCount > 0 ? `${newSellersCount}+` : newSellersCount,
     },
     {
       id: "profile",
@@ -236,8 +243,7 @@ const BuyerDashboard = () => {
           </div>
 
           <div className="flex items-center space-x-3">
-            <button className="p-2 hover:bg-slate-100 rounded-lg text-slate-600 relative">
-            </button>
+            <button className="p-2 hover:bg-slate-100 rounded-lg text-slate-600 relative"></button>
             <button className="p-2 hover:bg-slate-100 rounded-lg text-slate-600">
               <Settings className="w-5 h-5" />
             </button>

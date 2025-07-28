@@ -5,6 +5,7 @@ const cors = require("cors");
 const rateLimit = require("express-rate-limit");
 const path = require("path");
 const connectDB = require("./config/db");
+const newsRoutes = require("./routes/newsRoutes");
 
 // Load environment variables
 dotenv.config();
@@ -76,7 +77,7 @@ app.use("/api/payments", require("./routes/paymentRoutes"));
 app.use("/api/users", require("./routes/userRoutes"));
 app.use("/api/admin", require("./routes/adminRoutes"));
 app.use("/api/calendar", require("./routes/calendarRoutes"));
-
+app.use("/api/news", newsRoutes);
 // Swagger Documentation
 const swaggerUi = require("swagger-ui-express");
 const swaggerJsdoc = require("swagger-jsdoc");

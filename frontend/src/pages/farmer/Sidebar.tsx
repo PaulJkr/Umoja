@@ -10,6 +10,7 @@ import {
   ChevronLeft,
   ChevronRight,
   LogOut,
+  Newspaper,
 } from "lucide-react";
 import { useState } from "react";
 import { Link, useLocation } from "react-router-dom";
@@ -24,6 +25,7 @@ const navItems = [
   { label: "Analytics", icon: TrendingUp, path: "analytics" },
   { label: "Calendar", icon: Calendar, path: "calendar" },
   { label: "Customers", icon: Users, path: "customers" },
+  { label: "News", icon: Newspaper, path: "news" },
   { label: "Profile", icon: User, path: "profile" },
 ];
 

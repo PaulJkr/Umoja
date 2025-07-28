@@ -28,6 +28,7 @@ import AdminProductsPage from "../pages/admin/products/AdminProducts";
 import AdminReports from "../pages/admin/reports/AdminReports";
 import AdminApprovals from "../pages/admin/approvals/AdminApprovals";
 import AdminSettings from "../pages/admin/settings/AdminSettings";
+import NewsPage from "../pages/farmer/NewsPage";
 
 const AppRoutes = () => {
   return (
@@ -52,6 +53,7 @@ const AppRoutes = () => {
         <Route path="customers" element={<CustomersPage />} />
         <Route path="analytics" element={<AnalyticsPage />} />
         <Route path="calendar" element={<FarmerCalendarPage />} />
+        <Route path="news" element={<NewsPage />} />
         <Route path="profile" element={<FarmerProfilePage />} />
       </Route>
 
@@ -72,6 +74,7 @@ const AppRoutes = () => {
         <Route path="cart" element={<CartPage />} />
         <Route path="messages" element={<MessagesPage />} />
         <Route path="calendar" element={<CalendarPage />} />
+        <Route path="news" element={<NewsPage />} />
         <Route path="profile" element={<ProfilePage />} />
       </Route>
 
