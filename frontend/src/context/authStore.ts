@@ -37,7 +37,7 @@ export const useAuthStore = create<
   loadUserFromStorage: () => {
     try {
       const stored = localStorage.getItem("user");
-      if (stored) {
+      if (stored && stored !== "undefined") {
         set({ user: JSON.parse(stored), isLoading: false });
       } else {
         set({ isLoading: false });

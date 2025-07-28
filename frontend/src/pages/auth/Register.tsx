@@ -12,8 +12,10 @@ import {
   Lock,
   Users,
   ArrowLeft,
+  Loader2,
 } from "lucide-react";
 import { useState } from "react";
+import { toast } from "react-toastify";
 
 const registerSchema = z.object({
   name: z.string().min(2, "Name must be at least 2 characters"),
@@ -31,6 +33,7 @@ const Register = () => {
   const setUser = useAuthStore((s) => s.setUser);
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [redirecting, setRedirecting] = useState(false);
 
   const {
     register,
@@ -43,19 +46,62 @@ const Register = () => {
   const onSubmit = async (data: RegisterInput) => {
     setLoading(true);
     try {
-      const res = await api.post<{ user: User; token: string }>(
-        "/auth/register",
-        data
-      );
-      setUser(res.data.user);
-      localStorage.setItem("token", res.data.token);
-      navigate(`/${res.data.user.role}/dashboard`);
+      const res = await api.post("/auth/register", data);
+
+      // Check if registration was successful
+      if (res.status === 201 || res.status === 200) {
+        // Handle different response scenarios
+        if (res.data.token && res.data.user) {
+          // User is immediately active
+          setUser(res.data.user);
+          localStorage.setItem("token", res.data.token);
+          toast.success("Registration successful! Welcome!");
+          navigate(`/${res.data.user.role}/dashboard`);
+        } else {
+          // User needs approval (no token provided)
+          const approvalMessage =
+            res.data.message ||
+            "Registration successful! Your account is pending approval from the admin.";
+
+          // Show success toast for pending approval
+          toast.success(approvalMessage);
+
+          // Show loading spinner and redirect after delay
+          setRedirecting(true);
+          setTimeout(() => {
+            navigate("/login", {
+              state: {
+                message:
+                  "Your account is pending approval. You'll be notified once approved.",
+                type: "info",
+              },
+            });
+          }, 2000);
+        }
+      } else {
+        // Unexpected success status
+        toast.error("Registration failed. Please try again.");
+      }
     } catch (err: any) {
-      alert(
-        "Registration failed: " + err.response?.data?.msg || "Unknown error"
-      );
+      console.error("Registration error:", err);
+
+      // Handle different types of errors
+      if (err.response?.status === 400) {
+        toast.error(err.response.data?.msg || "Invalid registration data");
+      } else if (err.response?.status === 409) {
+        toast.error("User already exists with this phone number");
+      } else if (err.response?.status >= 500) {
+        toast.error("Server error. Please try again later.");
+      } else {
+        toast.error(
+          err.response?.data?.msg ||
+            err.message ||
+            "Registration failed. Please try again."
+        );
+      }
     } finally {
       setLoading(false);
+      // Don't reset redirecting here as we want to keep showing spinner during redirect
     }
   };
 
@@ -177,11 +223,23 @@ const Register = () => {
           <button
             type="submit"
             className={`w-full py-2 rounded-md font-semibold text-white bg-green-600 hover:bg-green-700 transition-all ${
-              loading ? "opacity-50 cursor-not-allowed" : ""
+              loading || redirecting ? "opacity-50 cursor-not-allowed" : ""
             }`}
-            disabled={loading}
+            disabled={loading || redirecting}
           >
-            {loading ? "Creating Account..." : "Create Account"}
+            {loading ? (
+              <div className="flex items-center justify-center gap-2">
+                <Loader2 className="w-4 h-4 animate-spin" />
+                Creating Account...
+              </div>
+            ) : redirecting ? (
+              <div className="flex items-center justify-center gap-2">
+                <Loader2 className="w-4 h-4 animate-spin" />
+                Redirecting to login...
+              </div>
+            ) : (
+              "Create Account"
+            )}
           </button>
         </form>
 
