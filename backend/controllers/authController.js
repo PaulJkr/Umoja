@@ -1,4 +1,5 @@
 const User = require("../models/User");
+const Settings = require("../models/Settings");
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcryptjs");
 
@@ -11,6 +12,11 @@ const generateToken = (user) => {
 exports.register = async (req, res) => {
   const { name, phone, password, role, location } = req.body;
   try {
+    const settings = await Settings.findOne();
+    if (!settings.registrationsOpen) {
+      return res.status(403).json({ msg: "Registrations are currently closed" });
+    }
+
     // Block public admin registrations
     if (role === "admin") {
       return res.status(403).json({ msg: "Unauthorized to register as admin" });
@@ -26,10 +32,15 @@ exports.register = async (req, res) => {
       passwordHash: hash,
       role,
       location,
+      approved: role === 'buyer', // Buyers are approved by default
     });
 
-    const token = generateToken(user);
-    res.status(201).json({ token, user: { name, role, phone } });
+    if (role === 'buyer') {
+      const token = generateToken(user);
+      res.status(201).json({ token, user: { name, role, phone } });
+    } else {
+      res.status(201).json({ msg: "Registration successful. Your account is pending approval from the admin." });
+    }
   } catch (err) {
     res.status(500).json({ msg: "Server error" });
   }

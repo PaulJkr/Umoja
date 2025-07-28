@@ -318,9 +318,16 @@ exports.getPendingApprovals = async (req, res) => {
   res.status(400).json({ error: "Invalid type" });
 };
 
+const sendSMS = require("../utils/smsSimulator");
+
+// ... (rest of the file)
+
 // PATCH /admin/approve-user/:id
 exports.approveUser = async (req, res) => {
-  await User.findByIdAndUpdate(req.params.id, { approved: true });
+  const user = await User.findByIdAndUpdate(req.params.id, { approved: true }, { new: true });
+  if (user) {
+    sendSMS(user.phone, `Karibu Umoja! Your account has been approved. You can now log in.`);
+  }
   res.json({ message: "User approved" });
 };
 

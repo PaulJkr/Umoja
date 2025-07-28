@@ -14,6 +14,8 @@ const {
   getPendingApprovals,
   getSettings,
   updateSettings,
+  approveUser,
+  approveProduct,
 } = require("../controllers/adminController");
 const verifyToken = require("../middleware/auth");
 
@@ -56,5 +58,7 @@ router.get("/pending-approvals", verifyToken, isAdmin, getPendingApprovals);
 
 router.get("/settings", verifyToken, isAdmin, getSettings);
 router.put("/settings", verifyToken, isAdmin, updateSettings);
+
+router.patch("/approve-user/:id", verifyToken, isAdmin, approveUser);
 
 module.exports = router;

@@ -1,12 +1,22 @@
 const mongoose = require("mongoose");
 
-const settingsSchema = new mongoose.Schema(
-  {
-    siteName: { type: String },
-    adminEmail: { type: String },
-    maintenanceMode: { type: Boolean, default: false },
+const settingsSchema = new mongoose.Schema({
+  platformName: {
+    type: String,
+    default: "Umoja Marketplace",
   },
-  { timestamps: true }
-);
+  commissionRate: {
+    type: Number,
+    default: 5,
+  },
+  currency: {
+    type: String,
+    default: "KES",
+  },
+  registrationsOpen: {
+    type: Boolean,
+    default: true,
+  },
+});
 
 module.exports = mongoose.model("Settings", settingsSchema);
