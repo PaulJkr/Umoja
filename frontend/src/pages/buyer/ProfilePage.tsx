@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useAuthStore } from "../../context/authStore";
+import { useUpdateUser } from "../../services/user";
 import { toast } from "react-toastify";
 import {
   Save,
@@ -16,6 +17,7 @@ import { motion, AnimatePresence } from "framer-motion";
 
 const ProfilePage = () => {
   const { user, updateUser, loadUserFromStorage, isLoading } = useAuthStore();
+  const { mutateAsync: updateUserMutation } = useUpdateUser();
   const [name, setName] = useState("");
   const [phone, setPhone] = useState("");
   const [location, setLocation] = useState("");
@@ -43,13 +45,7 @@ const ProfilePage = () => {
     setIsSaving(true);
 
     try {
-      const updated = { ...user, name, phone, location };
-      localStorage.setItem("user", JSON.stringify(updated));
-      updateUser?.(updated);
-
-      // Simulate API call delay
-      await new Promise((resolve) => setTimeout(resolve, 1000));
-
+      await updateUserMutation({ name, phone, location });
       toast.success("✅ Profile updated successfully!");
       setIsEditing(false);
     } catch (error) {

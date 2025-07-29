@@ -3,7 +3,7 @@ const router = express.Router();
 const User = require("../models/User");
 const bcrypt = require("bcryptjs"); // ✅ Add bcrypt import
 const multer = require("multer");
-const path = require("path");
+const verifyToken = require("../middleware/auth");
 
 // ✅ Multer setup for avatar uploads
 const storage = multer.diskStorage({
@@ -229,3 +229,34 @@ router.put("/change-password/:id", async (req, res) => {
 });
 
 module.exports = router;
+
+router.put("/me", verifyToken, async (req, res) => {
+  try {
+    const { name, phone, location } = req.body;
+
+    const updatedFields = {
+      name,
+      phone,
+      location,
+    };
+
+    const updatedUser = await User.findByIdAndUpdate(
+      req.user.id,
+      updatedFields,
+      {
+        new: true,
+      }
+    );
+
+    if (!updatedUser) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    res.status(200).json({ updatedUser });
+  } catch (error) {
+    console.error("Error updating profile:", error);
+    res
+      .status(500)
+      .json({ message: "Failed to update profile", error: error.message });
+  }
+});
