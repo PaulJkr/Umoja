@@ -1,5 +1,5 @@
 import React from "react";
-import { User, PhoneCall, Trash2 } from "lucide-react";
+import { User, PhoneCall, Trash2, Edit } from "lucide-react";
 import { Product } from "../services/product";
 import { toast } from "react-toastify";
 
@@ -7,6 +7,7 @@ interface ProductCardProps {
   product: Product;
   onBuyClick?: (product: Product) => void;
   onDelete?: (id: string) => void;
+  onEdit?: (product: Product) => void;
   disableBuy?: boolean;
   isLoading?: boolean;
   showSellerInfo?: boolean;
@@ -17,6 +18,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
   product,
   onBuyClick,
   onDelete,
+  onEdit,
   disableBuy = false,
   isLoading = false,
   showSellerInfo = true,
@@ -103,12 +105,20 @@ const ProductCard: React.FC<ProductCardProps> = ({
         )}
 
         {showDelete && onDelete && (
-          <button
-            onClick={() => onDelete(product._id)}
-            className="w-full flex items-center justify-center gap-2 text-red-600 border border-red-600 py-2 rounded hover:bg-red-50 transition"
-          >
-            <Trash2 className="w-4 h-4" /> Delete
-          </button>
+          <div className="flex gap-2">
+            <button
+              onClick={() => onEdit && onEdit(product)}
+              className="w-full flex items-center justify-center gap-2 text-blue-600 border border-blue-600 py-2 rounded hover:bg-blue-50 transition"
+            >
+              <Edit className="w-4 h-4" /> Edit
+            </button>
+            <button
+              onClick={() => onDelete(product._id)}
+              className="w-full flex items-center justify-center gap-2 text-red-600 border border-red-600 py-2 rounded hover:bg-red-50 transition"
+            >
+              <Trash2 className="w-4 h-4" /> Delete
+            </button>
+          </div>
         )}
       </div>
 

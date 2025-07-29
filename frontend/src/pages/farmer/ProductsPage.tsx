@@ -7,16 +7,25 @@ import { Button } from "../../components/ui/button";
 import { Plus, Package, Search, Filter, Grid3X3, List } from "lucide-react";
 import { useState } from "react";
 import AddProductModal from "../dashboard/components/AddProductModal";
+import EditProductModal from "./EditProductModal";
+import { Product } from "../../services/product";
 
 const ProductsPage = () => {
   const { user } = useAuthStore();
   const farmerId = user?._id;
-  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isAddModalOpen, setIsAddModalOpen] = useState(false);
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
   const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
   const [searchQuery, setSearchQuery] = useState("");
 
   const { data: products = [], isLoading } = useFarmerProducts();
   const { mutate: deleteProduct } = useDeleteProduct();
+
+  const handleEdit = (product: Product) => {
+    setSelectedProduct(product);
+    setIsEditModalOpen(true);
+  };
 
   const handleDelete = (productId: string) => {
     if (confirm("Are you sure you want to delete this product?")) {
@@ -66,7 +75,7 @@ const ProductsPage = () => {
               transition={{ delay: 0.1 }}
             >
               <Button
-                onClick={() => setIsModalOpen(true)}
+                onClick={() => setIsAddModalOpen(true)}
                 className="bg-emerald-600 hover:bg-emerald-700 text-white px-6 py-3 rounded-xl font-medium flex items-center gap-2 shadow-sm hover:shadow-md transition-all duration-200"
               >
                 <Plus size={18} />
@@ -190,7 +199,7 @@ const ProductsPage = () => {
                     whileTap={{ scale: 0.95 }}
                   >
                     <Button
-                      onClick={() => setIsModalOpen(true)}
+                      onClick={() => setIsAddModalOpen(true)}
                       className="bg-emerald-600 hover:bg-emerald-700 text-white px-8 py-3 rounded-xl font-medium flex items-center gap-2 mx-auto"
                     >
                       <Plus size={18} />
@@ -223,7 +232,9 @@ const ProductsPage = () => {
                   <ProductCard
                     product={product}
                     onDelete={handleDelete}
+                    onEdit={handleEdit}
                     viewMode={viewMode}
+                    showDelete={true}
                   />
                 </motion.div>
               ))}
@@ -268,7 +279,16 @@ const ProductsPage = () => {
         )}
 
         {/* Add Product Modal */}
-        <AddProductModal open={isModalOpen} setOpen={setIsModalOpen} />
+        <AddProductModal open={isAddModalOpen} setOpen={setIsAddModalOpen} />
+
+        {/* Edit Product Modal */}
+        {selectedProduct && (
+          <EditProductModal
+            open={isEditModalOpen}
+            setOpen={setIsEditModalOpen}
+            product={selectedProduct}
+          />
+        )}
       </div>
     </div>
   );
