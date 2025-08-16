@@ -24,15 +24,15 @@ export const useSellers = () =>
       return res.data;
     },
   });
-
 export const useUpdateUser = () => {
   const queryClient = useQueryClient();
-  return useMutation(
-    (data: Partial<User>) => api.put("/users/me", data),
-    {
-      onSuccess: () => {
-        queryClient.invalidateQueries(["user"]);
-      },
-    }
-  );
+  return useMutation({
+    mutationFn: async (data: Partial<User>) => {
+      const res = await api.put("/users/me", data);
+      return res.data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["user"] });
+    },
+  });
 };

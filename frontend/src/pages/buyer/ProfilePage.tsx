@@ -16,7 +16,7 @@ import {
 import { motion, AnimatePresence } from "framer-motion";
 
 const ProfilePage = () => {
-  const { user, updateUser, loadUserFromStorage, isLoading } = useAuthStore();
+  const { user, loadUserFromStorage, isLoading } = useAuthStore();
   const { mutateAsync: updateUserMutation } = useUpdateUser();
   const [name, setName] = useState("");
   const [phone, setPhone] = useState("");
@@ -45,7 +45,8 @@ const ProfilePage = () => {
     setIsSaving(true);
 
     try {
-      await updateUserMutation({ name, phone, location });
+      const updatedUser = await updateUserMutation({ name, phone, location });
+      useAuthStore.getState().updateUser(updatedUser);
       toast.success("✅ Profile updated successfully!");
       setIsEditing(false);
     } catch (error) {
@@ -298,7 +299,7 @@ const ProfilePage = () => {
                       <div className="flex justify-between items-center">
                         <span className="text-gray-600">User ID</span>
                         <span className="text-gray-900 font-mono text-sm">
-                          {user.id || user._id || "N/A"}
+                          {user._id || "N/A"}
                         </span>
                       </div>
                       <div className="flex justify-between items-center">
