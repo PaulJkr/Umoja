@@ -26,19 +26,7 @@ import { useWishlistStore } from "../../context/wishlistStore";
 import { toast } from "react-toastify";
 import { useCartStore } from "../../context/cartStore";
 
-interface Product {
-  _id: string;
-  name: string;
-  price: number;
-  quantity: number;
-  type: "produce" | "seed" | "fertilizer";
-  imageUrl?: string;
-  seller?: {
-    _id: string;
-    name: string;
-    phone: string;
-  };
-}
+import { Product } from "../../services/product";
 
 const getCategoryIcon = (type: string) => {
   switch (type) {

@@ -20,9 +20,11 @@ export interface Product {
   category?: string;
   type: "produce" | "seed" | "fertilizer";
   imageUrl?: string;
+  description?: string;
   harvestDate?: string;
   certification?: string;
   verified?: boolean;
+  status?: "active" | "inactive";
   seller?: Seller; // Add optional seller info
 }
 export interface AdminProduct extends Product {

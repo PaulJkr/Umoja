@@ -21,9 +21,7 @@ const registerSchema = z.object({
   name: z.string().min(2, "Name must be at least 2 characters"),
   phone: z.string().min(10, "Phone number required"),
   password: z.string().min(6, "Password must be at least 6 characters"),
-  role: z.enum(["farmer", "buyer", "supplier"], {
-    required_error: "Please select a role",
-  }),
+  role: z.enum(["farmer", "buyer", "supplier"], "Please select a role"),
 });
 
 type RegisterInput = z.infer<typeof registerSchema>;

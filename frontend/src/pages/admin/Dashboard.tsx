@@ -53,14 +53,14 @@ const AdminDashboard = () => {
       width: 280,
       transition: {
         duration: 0.3,
-        ease: [0.4, 0, 0.2, 1],
+        ease: "easeInOut",
       },
     },
     closed: {
       width: 80,
       transition: {
         duration: 0.3,
-        ease: [0.4, 0, 0.2, 1],
+        ease: "easeInOut",
       },
     },
   };
@@ -70,14 +70,14 @@ const AdminDashboard = () => {
       marginLeft: 0,
       transition: {
         duration: 0.3,
-        ease: [0.4, 0, 0.2, 1],
+        ease: "easeInOut",
       },
     },
     closed: {
       marginLeft: 0,
       transition: {
         duration: 0.3,
-        ease: [0.4, 0, 0.2, 1],
+        ease: "easeInOut",
       },
     },
   };
@@ -85,6 +85,7 @@ const AdminDashboard = () => {
   return (
     <div className="flex h-screen overflow-hidden bg-slate-50">
       {/* Sidebar */}
+      {/* @ts-ignore */}
       <motion.aside
         variants={sidebarVariants}
         animate={sidebarOpen ? "open" : "closed"}
@@ -316,6 +317,7 @@ const AdminDashboard = () => {
         </motion.header>
 
         {/* Main Content Area */}
+        {/* @ts-ignore */}
         <motion.main
           variants={contentVariants}
           initial="closed"

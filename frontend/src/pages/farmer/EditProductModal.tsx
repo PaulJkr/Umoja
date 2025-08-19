@@ -20,8 +20,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "../../components/ui/select";
-import { useUpdateProduct } from "../../services/product";
-import { Product } from "../../types";
+import { useUpdateProduct, Product } from "../../services/product";
 
 interface EditProductModalProps {
   open: boolean;
@@ -37,7 +36,7 @@ const EditProductModal: React.FC<EditProductModalProps> = ({
   const { register, handleSubmit, reset } = useForm<Product>({
     defaultValues: product,
   });
-  const { mutate: updateProduct, isLoading } = useUpdateProduct();
+  const { mutate: updateProduct, isPending: isLoading } = useUpdateProduct();
 
   const onSubmit = (data: Product) => {
     updateProduct({ id: product._id, data });

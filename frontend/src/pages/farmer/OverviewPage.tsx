@@ -11,6 +11,7 @@ import {
   TrendingUp,
   ArrowUpRight,
   Package,
+  Link,
 } from "lucide-react";
 
 // Enhanced StatCard component with modern design
@@ -191,14 +192,15 @@ const OverviewPage = () => {
               </p>
             </div>
 
-            <motion.button
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-              className="mt-4 md:mt-0 px-4 py-2 text-emerald-600 hover:text-emerald-700 font-medium flex items-center gap-2 group"
-            >
-              View All Products
-              <ArrowUpRight className="w-4 h-4 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
-            </motion.button>
+            <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+              <Link
+                to="/farmer/products"
+                className="mt-4 md:mt-0 px-4 py-2 text-emerald-600 hover:text-emerald-700 font-medium flex items-center gap-2 group"
+              >
+                View All Products
+                <ArrowUpRight className="w-4 h-4 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
+              </Link>
+            </motion.div>
           </div>
 
           {/* Products Grid */}

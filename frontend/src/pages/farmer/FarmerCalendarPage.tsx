@@ -499,8 +499,7 @@ export const FarmerCalendarPage: React.FC = () => {
                           <motion.button
                             whileHover={{ scale: 1.2 }}
                             whileTap={{ scale: 0.9 }}
-                            onClick={(e) => {
-                              e.stopPropagation();
+                            onClick={() => {
                               setEditingEvent(event.resource);
                               setShowModal(true);
                             }}
@@ -512,8 +511,7 @@ export const FarmerCalendarPage: React.FC = () => {
                           <motion.button
                             whileHover={{ scale: 1.2 }}
                             whileTap={{ scale: 0.9 }}
-                            onClick={(e) => {
-                              e.stopPropagation();
+                            onClick={() => {
                               handleDeleteEvent(
                                 event.resource._id,
                                 event.resource.title

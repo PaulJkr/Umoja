@@ -233,8 +233,6 @@ const ProductsPage = () => {
                     product={product}
                     onDelete={handleDelete}
                     onEdit={handleEdit}
-                    viewMode={viewMode}
-                    showDelete={true}
                   />
                 </motion.div>
               ))}

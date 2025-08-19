@@ -8,6 +8,7 @@ exports.createProduct = async (req, res) => {
     quantity,
     type,
     category,
+    description,
     harvestDate,
     certification,
   } = req.body;
@@ -30,6 +31,7 @@ exports.createProduct = async (req, res) => {
       quantity,
       type,
       category,
+      description,
       harvestDate,
       imageUrl,
       certification,
