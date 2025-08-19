@@ -141,7 +141,6 @@ const MessagesPage = () => {
               >
                 <option value="all">All Roles</option>
                 <option value="farmer">Farmers</option>
-                <option value="supplier">Suppliers</option>
               </select>
             </div>
 

@@ -10,7 +10,7 @@ import {
   useUpdateCalendarEvent,
   useDeleteCalendarEvent,
 } from "../services/calendarService";
-import { format, parseISO, parse } from "date-fns";
+import { format, parseISO } from "date-fns";
 import {
   Dialog,
   DialogContent,
@@ -59,24 +59,20 @@ const CalendarView = () => {
   });
 
   const handleSelectEvent = (event: any) => {
-    console.log("handleSelectEvent called with event:", event);
     setSelectedEvent(event);
     setEventForm({
       title: event.title,
       type: event.type || "",
-      start: format(event.start, "yyyy-MM-dd'T'HH:mm"),
+            start: format(event.start, "yyyy-MM-dd'T'HH:mm"),
       end: format(event.end, "yyyy-MM-dd'T'HH:mm"),
       description: event.description || "",
     });
     setIsModalOpen(true);
-    console.log("selectedEvent after set:", event); // This will log the event object
-    console.log("eventForm after set:", eventForm); // This will log the eventForm object
   };
 
   const handleSelectSlot = (
     slotInfo: import("react-big-calendar").SlotInfo
   ) => {
-    console.log("handleSelectSlot called with slotInfo:", slotInfo);
     setSelectedEvent(null);
     setEventForm({
       title: "",
@@ -86,8 +82,6 @@ const CalendarView = () => {
       description: "",
     });
     setIsModalOpen(true);
-    console.log("selectedEvent after set (null):");
-    console.log("eventForm after set (new):");
   };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -99,8 +93,8 @@ const CalendarView = () => {
     try {
       const eventData = {
         ...eventForm,
-        start: parse(eventForm.start, "yyyy-MM-dd'T'HH:mm", new Date()).toISOString(),
-        end: parse(eventForm.end, "yyyy-MM-dd'T'HH:mm", new Date()).toISOString(),
+        start: new Date(eventForm.start).toISOString(),
+        end: new Date(eventForm.end).toISOString(),
       };
 
       if (selectedEvent) {
