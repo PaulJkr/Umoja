@@ -32,45 +32,14 @@ router.get("/farmer/:farmerId", auth, async (req, res) => {
     console.log(`📅 Fetching events for farmer: ${farmerId}`);
 
     // Get sample events
-    const sampleEvents = [
-      {
-        _id: "sample-1",
-        title: "Plant Maize",
-        type: "planting",
-        start: new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString(), // Tomorrow
-        end: new Date(Date.now() + 25 * 60 * 60 * 1000).toISOString(),
-        farmerId: farmerId,
-      },
-      {
-        _id: "sample-2",
-        title: "Harvest Tomatoes",
-        type: "harvest",
-        start: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString(), // Next week
-        end: new Date(
-          Date.now() + 7 * 24 * 60 * 60 * 1000 + 4 * 60 * 60 * 1000
-        ).toISOString(),
-        farmerId: farmerId,
-      },
-      {
-        _id: "sample-3",
-        title: "Apply Fertilizer",
-        type: "maintenance",
-        start: new Date(Date.now() + 3 * 24 * 60 * 60 * 1000).toISOString(), // In 3 days
-        end: new Date(
-          Date.now() + 3 * 24 * 60 * 60 * 1000 + 2 * 60 * 60 * 1000
-        ).toISOString(),
-        farmerId: farmerId,
-      },
-    ];
-
     // ✅ Get user-created events for this farmer
     const userEvents = temporaryEvents[farmerId] || [];
 
     // ✅ Combine sample events with user-created events
-    const allEvents = [...sampleEvents, ...userEvents];
+    const allEvents = [...userEvents]; // Only user-created events
 
     console.log(
-      `📊 Returning ${allEvents.length} events (${sampleEvents.length} sample + ${userEvents.length} user-created)`
+      `📊 Returning ${allEvents.length} events (${userEvents.length} user-created)`
     );
 
     res.json(allEvents);
@@ -182,6 +151,28 @@ router.put("/events/:eventId", auth, async (req, res) => {
   try {
     const { eventId } = req.params;
     const updates = req.body;
+    const farmerId = req.user?.id || req.user?._id;
+
+    if (!farmerId) {
+      return res.status(401).json({ message: "Authentication required - no user ID found" });
+    }
+
+    if (!temporaryEvents[farmerId]) {
+      return res.status(404).json({ message: "No events found for this farmer." });
+    }
+
+    let eventFound = false;
+    temporaryEvents[farmerId] = temporaryEvents[farmerId].map((event) => {
+      if (event._id === eventId) {
+        eventFound = true;
+        return { ...event, ...updates };
+      }
+      return event;
+    });
+
+    if (!eventFound) {
+      return res.status(404).json({ message: "Event not found." });
+    }
 
     res.json({
       message: "Event updated successfully",
@@ -204,6 +195,33 @@ router.put("/events/:eventId", auth, async (req, res) => {
 router.delete("/events/:eventId", auth, async (req, res) => {
   try {
     const { eventId } = req.params;
+    const farmerId = req.user?.id || req.user?._id;
+
+    if (!farmerId) {
+      return res.status(401).json({ message: "Authentication required - no user ID found" });
+    }
+
+    // If it's a sample event, just return success without trying to delete from temporary storage
+    if (eventId.startsWith("sample-")) {
+      console.log(`Attempted to delete sample event: ${eventId}. Returning success.`);
+      return res.json({
+        message: "Sample event 'deleted' successfully (not actually removed from server).",
+        eventId,
+      });
+    }
+
+    if (!temporaryEvents[farmerId]) {
+      return res.status(404).json({ message: "No events found for this farmer." });
+    }
+
+    const initialLength = temporaryEvents[farmerId].length;
+    temporaryEvents[farmerId] = temporaryEvents[farmerId].filter(
+      (event) => event._id !== eventId
+    );
+
+    if (temporaryEvents[farmerId].length === initialLength) {
+      return res.status(404).json({ message: "Event not found." });
+    }
 
     res.json({
       message: "Event deleted successfully",

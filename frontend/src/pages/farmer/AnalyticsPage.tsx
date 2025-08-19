@@ -21,7 +21,10 @@ import {
 const AnalyticsPage = () => {
   const { user } = useAuthStore();
   const [selectedPeriod, setSelectedPeriod] = React.useState("30 days");
-  const { data, isLoading, refetch } = useFarmerAnalytics(user?._id, selectedPeriod);
+  const { data, isLoading, refetch } = useFarmerAnalytics(
+    user?._id,
+    selectedPeriod
+  );
 
   const handleExportPdf = () => {
     try {
@@ -49,7 +52,14 @@ const AnalyticsPage = () => {
       yPos += 7;
       doc.text(`Total Orders: ${data.totalOrders}`, 14, yPos);
       yPos += 7;
-      doc.text(`Average Order Value: KSh ${(data.totalOrders > 0 ? (data.totalRevenue / data.totalOrders) : 0).toFixed(2)}`, 14, yPos);
+      doc.text(
+        `Average Order Value: KSh ${(data.totalOrders > 0
+          ? data.totalRevenue / data.totalOrders
+          : 0
+        ).toFixed(2)}`,
+        14,
+        yPos
+      );
       yPos += 7;
       doc.text(`Growth Rate: 23.5%`, 14, yPos); // Assuming this is static for now
 
@@ -225,7 +235,15 @@ const AnalyticsPage = () => {
                     <ShoppingCart className="w-5 h-5 text-blue-600" />
                   </div>
                 </div>
-                <StatCard title="Total Orders" value={data.totalOrders} icon={ShoppingCart} color="blue" delay={0.5} trend="up" trendValue={12.5} />
+                <StatCard
+                  title="Total Orders"
+                  value={data.totalOrders}
+                  icon={ShoppingCart}
+                  color="blue"
+                  delay={0.5}
+                  trend="up"
+                  trendValue={12.5}
+                />
               </div>
             </div>
           </motion.div>
@@ -246,7 +264,6 @@ const AnalyticsPage = () => {
                   <div className="p-3 bg-purple-100 rounded-xl">
                     <BarChart3 className="w-5 h-5 text-purple-600" />
                   </div>
-
                 </div>
                 <div>
                   <p className="text-sm font-medium text-gray-600 mb-1">
