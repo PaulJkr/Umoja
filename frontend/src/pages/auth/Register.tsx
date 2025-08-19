@@ -22,7 +22,16 @@ const registerSchema = z.object({
   name: z.string().min(2, "Name must be at least 2 characters"),
   phone: z.string().min(10, "Phone number required"),
   location: z.string().min(2, "Location is required"), // New field
-  password: z.string().min(6, "Password must be at least 6 characters"),
+  password: z
+    .string()
+    .min(6, "Password must be at least 6 characters")
+    .regex(/(?=.*[a-z])/, "Password must contain at least one lowercase letter")
+    .regex(/(?=.*[A-Z])/, "Password must contain at least one uppercase letter")
+    .regex(/(?=.*\d)/, "Password must contain at least one number")
+    .regex(
+      /(?=.*[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?])/,
+      "Password must contain at least one special character"
+    ),
   role: z.enum(["farmer", "buyer", "supplier"], "Please select a role"),
 });
 
