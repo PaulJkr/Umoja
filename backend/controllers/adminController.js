@@ -2,7 +2,26 @@ const User = require("../models/User");
 const Product = require("../models/Product");
 const Order = require("../models/Order");
 const Settings = require("../models/Settings");
+const sendSMS = require("../utils/smsSimulator");
+const PDFDocument = require("pdfkit");
 
+// CSV escape function - DECLARED ONLY ONCE
+const escapeCsv = (value) => {
+  if (value === null || value === undefined) {
+    return "";
+  }
+  let stringValue = String(value);
+  if (
+    stringValue.includes(",") ||
+    stringValue.includes('"') ||
+    stringValue.includes("\n")
+  ) {
+    return `"${stringValue.replace(/"/g, '""')}"`;
+  }
+  return stringValue;
+};
+
+// Dashboard Stats - SINGLE VERSION
 exports.getDashboardStats = async (req, res) => {
   try {
     const [totalUsers, totalProducts, totalOrders, orders] = await Promise.all([
@@ -29,6 +48,7 @@ exports.getDashboardStats = async (req, res) => {
   }
 };
 
+// User Management
 exports.getAllUsers = async (req, res) => {
   try {
     const { search = "", role } = req.query;
@@ -56,7 +76,6 @@ exports.getAllUsers = async (req, res) => {
   }
 };
 
-// Block or unblock a user
 exports.toggleUserBlock = async (req, res) => {
   try {
     const user = await User.findById(req.params.id);
@@ -74,7 +93,6 @@ exports.toggleUserBlock = async (req, res) => {
   }
 };
 
-// Update user role
 exports.updateUserRole = async (req, res) => {
   const { role } = req.body;
   if (!["user", "admin", "farmer", "buyer", "supplier"].includes(role)) {
@@ -94,6 +112,114 @@ exports.updateUserRole = async (req, res) => {
     res.status(500).json({ msg: "Server error" });
   }
 };
+
+exports.deleteUser = async (req, res) => {
+  try {
+    const deletedUser = await User.findByIdAndDelete(req.params.id);
+    if (!deletedUser) {
+      return res.status(404).json({ msg: "User not found" });
+    }
+    res.json({ msg: "User deleted successfully" });
+  } catch (err) {
+    console.error("Delete user error:", err);
+    res.status(500).json({ msg: "Server error" });
+  }
+};
+
+exports.getUserDetails = async (req, res) => {
+  try {
+    const user = await User.findById(req.params.id).select("-password");
+    if (!user) {
+      return res.status(404).json({ msg: "User not found" });
+    }
+    res.json(user);
+  } catch (err) {
+    console.error("Get user details error:", err);
+    res.status(500).json({ msg: "Server error" });
+  }
+};
+
+exports.getRawUserDetails = async (req, res) => {
+  try {
+    const user = await User.findById(req.params.id);
+    if (!user) {
+      return res.status(404).json({ msg: "User not found" });
+    }
+    res.json(user);
+  } catch (err) {
+    console.error("Get raw user details error:", err);
+    res.status(500).json({ msg: "Server error" });
+  }
+};
+
+exports.getUserRoleCounts = async (req, res) => {
+  try {
+    const counts = await User.aggregate([
+      { $group: { _id: "$role", count: { $sum: 1 } } },
+    ]);
+
+    const result = {};
+    counts.forEach((item) => {
+      result[item._id] = item.count;
+    });
+
+    res.json(result);
+  } catch (err) {
+    res.status(500).json({ error: "Failed to get role counts" });
+  }
+};
+
+// Export Users as PDF
+exports.exportUsers = async (req, res) => {
+  try {
+    const users = await User.find({}, "-password");
+
+    const doc = new PDFDocument();
+
+    res.setHeader("Content-Type", "application/pdf");
+    res.setHeader("Content-Disposition", 'attachment; filename="users.pdf"');
+
+    doc.pipe(res);
+
+    doc
+      .fontSize(16)
+      .text("Umoja Marketplace - User Report", { align: "center" });
+    doc.moveDown();
+
+    // Table Headers
+    doc.fontSize(10).text("ID", 50, doc.y, { width: 100, continued: true });
+    doc.text("Name", 150, doc.y, { width: 100, continued: true });
+    doc.text("Phone", 250, doc.y, { width: 100, continued: true });
+    doc.text("Role", 350, doc.y, { width: 80, continued: true });
+    doc.text("Approved", 430, doc.y, { width: 80 });
+    doc.moveDown();
+    doc.lineWidth(0.5);
+    doc.lineCap("butt").moveTo(50, doc.y).lineTo(550, doc.y).stroke();
+    doc.moveDown(0.5);
+
+    // Table Rows
+    users.forEach((user) => {
+      doc
+        .fontSize(8)
+        .text(user._id.toString(), 50, doc.y, { width: 100, continued: true });
+      doc.text(user.name || "N/A", 150, doc.y, { width: 100, continued: true });
+      doc.text(user.phone || "N/A", 250, doc.y, {
+        width: 100,
+        continued: true,
+      });
+      doc.text(user.role || "N/A", 350, doc.y, { width: 80, continued: true });
+      doc.text(user.approved ? "Yes" : "No", 430, doc.y, { width: 80 });
+      doc.moveDown();
+    });
+
+    doc.end();
+  } catch (err) {
+    console.error("Export users error:", err);
+    res.status(500).json({ msg: "Server error while exporting users" });
+  }
+};
+
+// Product Management
 exports.toggleProductApproval = async (req, res) => {
   try {
     const product = await Product.findById(req.params.id);
@@ -144,6 +270,7 @@ exports.getProducts = async (req, res) => {
     res.status(500).json({ msg: "Server error" });
   }
 };
+
 exports.toggleStockStatus = async (req, res) => {
   try {
     const product = await Product.findById(req.params.id);
@@ -160,6 +287,7 @@ exports.toggleStockStatus = async (req, res) => {
     res.status(500).json({ msg: "Server error" });
   }
 };
+
 exports.deleteProduct = async (req, res) => {
   try {
     const deleted = await Product.findByIdAndDelete(req.params.id);
@@ -172,109 +300,8 @@ exports.deleteProduct = async (req, res) => {
     res.status(500).json({ msg: "Server error" });
   }
 };
-exports.getUserRoleCounts = async (req, res) => {
-  try {
-    const counts = await User.aggregate([
-      { $group: { _id: "$role", count: { $sum: 1 } } },
-    ]);
 
-    const result = {};
-    counts.forEach((item) => {
-      result[item._id] = item.count;
-    });
-
-    res.json(result);
-  } catch (err) {
-    res.status(500).json({ error: "Failed to get role counts" });
-  }
-};
-exports.getDashboardStats = async (req, res) => {
-  try {
-    const [totalUsers, totalProducts, totalOrders, orders] = await Promise.all([
-      User.countDocuments(),
-      Product.countDocuments(),
-      Order.countDocuments(),
-      Order.find(),
-    ]);
-
-    const totalRevenue = orders.reduce((sum, order) => sum + order.total, 0);
-
-    res.json({ totalUsers, totalProducts, totalOrders, totalRevenue });
-  } catch (err) {
-    res.status(500).json({ error: "Failed to fetch dashboard stats" });
-  }
-};
-exports.getPendingApprovals = async (req, res) => {
-  try {
-    const { type } = req.query;
-    let pendingItems;
-
-    if (type === "users") {
-      pendingItems = await User.find({ verified: false });
-    } else if (type === "products") {
-      pendingItems = await Product.find({ verified: false });
-    } else {
-      return res.status(400).json({ msg: "Invalid approval type specified." });
-    }
-
-    res.json(pendingItems);
-  } catch (err) {
-    console.error("Get pending approvals error:", err);
-    res
-      .status(500)
-      .json({ msg: "Server error while fetching pending approvals" });
-  }
-};
-
-exports.getPendingApprovals = async (req, res) => {
-  try {
-    const { type } = req.query;
-    let pendingItems;
-
-    if (type === "users") {
-      pendingItems = await User.find({ verified: false });
-    } else if (type === "products") {
-      pendingItems = await Product.find({ verified: false });
-    } else {
-      return res.status(400).json({ msg: "Invalid approval type specified." });
-    }
-
-    res.json(pendingItems);
-  } catch (err) {
-    console.error("Get pending approvals error:", err);
-    res
-      .status(500)
-      .json({ msg: "Server error while fetching pending approvals" });
-  }
-};
-
-// Placeholder for settings
-let platformSettings = {
-  platformName: "Umoja Marketplace",
-  commissionRate: 5,
-  currency: "KES",
-  registrationsOpen: true,
-};
-
-exports.getSettings = (req, res) => {
-  try {
-    res.json(platformSettings);
-  } catch (err) {
-    console.error("Get settings error:", err);
-    res.status(500).json({ msg: "Server error while fetching settings" });
-  }
-};
-
-exports.updateSettings = (req, res) => {
-  try {
-    platformSettings = { ...platformSettings, ...req.body };
-    res.json(platformSettings);
-  } catch (err) {
-    console.error("Update settings error:", err);
-    res.status(500).json({ msg: "Server error while updating settings" });
-  }
-};
-
+// Orders
 exports.getRecentOrders = async (req, res) => {
   try {
     const orders = await Order.find()
@@ -302,47 +329,80 @@ exports.getRecentOrders = async (req, res) => {
     res.status(500).json({ error: "Failed to fetch recent orders" });
   }
 };
-// GET /admin/pending-approvals?type=users|products
+
+// Approvals - SINGLE VERSION
 exports.getPendingApprovals = async (req, res) => {
-  const { type } = req.query;
-  if (type === "users") {
-    const users = await User.find({
-      approved: false,
-      role: { $in: ["farmer", "supplier"] },
-    });
-    return res.json(users);
-  } else if (type === "products") {
-    const products = await Product.find({ approved: false });
-    return res.json(products);
+  try {
+    const { type } = req.query;
+    let pendingItems;
+
+    if (type === "users") {
+      pendingItems = await User.find({
+        approved: false,
+        role: { $in: ["farmer", "supplier"] },
+      });
+    } else if (type === "products") {
+      pendingItems = await Product.find({ approved: false });
+    } else {
+      return res.status(400).json({ msg: "Invalid approval type specified." });
+    }
+
+    res.json(pendingItems);
+  } catch (err) {
+    console.error("Get pending approvals error:", err);
+    res
+      .status(500)
+      .json({ msg: "Server error while fetching pending approvals" });
   }
-  res.status(400).json({ error: "Invalid type" });
 };
 
-const sendSMS = require("../utils/smsSimulator");
-
-
-// PATCH /admin/approve-user/:id
 exports.approveUser = async (req, res) => {
-  const user = await User.findByIdAndUpdate(req.params.id, { approved: true }, { new: true });
-  if (user) {
-    sendSMS(user.phone, `Karibu Umoja! Your account has been approved. You can now log in.`);
+  try {
+    const user = await User.findByIdAndUpdate(
+      req.params.id,
+      { approved: true },
+      { new: true }
+    );
+    if (user) {
+      sendSMS(
+        user.phone,
+        `Karibu Umoja! Your account has been approved. You can now log in.`
+      );
+    }
+    res.json({ message: "User approved" });
+  } catch (err) {
+    console.error("Approve user error:", err);
+    res.status(500).json({ msg: "Server error" });
   }
-  res.json({ message: "User approved" });
 };
 
-// PATCH /admin/approve-product/:id
 exports.approveProduct = async (req, res) => {
-  await Product.findByIdAndUpdate(req.params.id, { approved: true });
-  res.json({ message: "Product approved" });
-};
-// GET /admin/settings
-exports.getSettings = async (req, res) => {
-  const settings = await Settings.findOne(); // Singleton doc
-  res.json(settings);
+  try {
+    await Product.findByIdAndUpdate(req.params.id, { approved: true });
+    res.json({ message: "Product approved" });
+  } catch (err) {
+    console.error("Approve product error:", err);
+    res.status(500).json({ msg: "Server error" });
+  }
 };
 
-// PUT /admin/settings
+// Settings - SINGLE VERSION
+exports.getSettings = async (req, res) => {
+  try {
+    const settings = await Settings.findOne();
+    res.json(settings);
+  } catch (err) {
+    console.error("Get settings error:", err);
+    res.status(500).json({ msg: "Server error while fetching settings" });
+  }
+};
+
 exports.updateSettings = async (req, res) => {
-  await Settings.updateOne({}, req.body, { upsert: true });
-  res.json({ message: "Settings updated" });
+  try {
+    await Settings.updateOne({}, req.body, { upsert: true });
+    res.json({ message: "Settings updated" });
+  } catch (err) {
+    console.error("Update settings error:", err);
+    res.status(500).json({ msg: "Server error while updating settings" });
+  }
 };

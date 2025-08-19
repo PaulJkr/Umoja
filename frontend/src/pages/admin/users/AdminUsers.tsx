@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query"; // Added useQueryClient
 import {
   Search,
   Filter,
@@ -18,6 +18,15 @@ import { motion, AnimatePresence } from "framer-motion";
 import api from "../../../api/axios";
 import { Skeleton } from "../../../components/ui/skeleton";
 import { Button } from "../../../components/ui/button";
+import {
+  // Added Dialog components
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+  DialogFooter,
+} from "../../../components/ui/dialog";
 
 interface User {
   _id: string;
@@ -25,6 +34,9 @@ interface User {
   phone: string;
   role: string;
   createdAt: string;
+  location?: string; // Added location
+  blocked?: boolean; // Added blocked
+  approved?: boolean; // Added approved
 }
 
 const fetchUsers = async ({ queryKey }: any): Promise<User[]> => {
@@ -56,9 +68,11 @@ const StatCard = ({ icon: Icon, label, value, color }: any) => (
 const UserRow = ({
   user,
   onDelete,
+  onViewDetails, // Added onViewDetails
 }: {
   user: User;
   onDelete: (id: string) => void;
+  onViewDetails: (id: string) => void; // Added onViewDetails
 }) => {
   const [showActions, setShowActions] = useState(false);
 
@@ -78,6 +92,12 @@ const UserRow = ({
         bg: "bg-purple-50",
         text: "text-purple-700",
         border: "border-purple-200",
+      },
+      supplier: {
+        // Added supplier role
+        bg: "bg-yellow-50",
+        text: "text-yellow-700",
+        border: "border-yellow-200",
       },
     };
     const config = configs[role as keyof typeof configs] || configs.farmer;
@@ -147,7 +167,13 @@ const UserRow = ({
                     transition={{ duration: 0.15 }}
                     className="absolute right-0 mt-2 w-40 bg-white border border-slate-200 rounded-lg shadow-lg py-2 z-10"
                   >
-                    <button className="w-full text-left px-4 py-2 text-sm text-slate-700 hover:bg-slate-50 transition-colors flex items-center gap-2">
+                    <button
+                      onClick={() => {
+                        onViewDetails(user._id); // Added onClick
+                        setShowActions(false);
+                      }}
+                      className="w-full text-left px-4 py-2 text-sm text-slate-700 hover:bg-slate-50 transition-colors flex items-center gap-2"
+                    >
                       <Eye size={14} />
                       View Details
                     </button>
@@ -180,9 +206,13 @@ const UserRow = ({
 };
 
 const AdminUsers = () => {
+  const queryClient = useQueryClient(); // Initialized queryClient
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedRole, setSelectedRole] = useState("all");
   const [roleCounts, setRoleCounts] = useState<Record<string, number>>({});
+  const [selectedUserForDetails, setSelectedUserForDetails] =
+    useState<User | null>(null); // New state
+  const [isDetailsModalOpen, setIsDetailsModalOpen] = useState(false); // New state
 
   const {
     data: users,
@@ -203,9 +233,22 @@ const AdminUsers = () => {
       await api.delete(`/admin/users/${id}`);
       refetch();
       fetchRoleCounts();
+      queryClient.invalidateQueries({ queryKey: ["admin-users"] }); // Invalidate to refetch user list
     } catch (err) {
       console.error(err);
       alert("Failed to delete user.");
+    }
+  };
+
+  const handleViewDetails = async (id: string) => {
+    // New function
+    try {
+      const res = await api.get(`/admin/users/${id}`);
+      setSelectedUserForDetails(res.data);
+      setIsDetailsModalOpen(true);
+    } catch (err) {
+      console.error("Failed to fetch user details:", err);
+      alert("Failed to fetch user details.");
     }
   };
 
@@ -242,6 +285,27 @@ const AdminUsers = () => {
       color: "bg-gradient-to-br from-purple-500 to-purple-600",
     },
   ];
+
+  const handleExport = async () => {
+    try {
+      const response = await api.get("/admin/users/export", {
+        responseType: "blob", // Important: responseType must be 'blob' for file downloads
+      });
+
+      // Create a blob from the response data
+      const url = window.URL.createObjectURL(new Blob([response.data]));
+      const link = document.createElement("a");
+      link.href = url;
+      link.setAttribute("download", "users.pdf"); // Set the download filename
+      document.body.appendChild(link);
+      link.click();
+      link.parentNode?.removeChild(link); // Clean up the DOM
+      window.URL.revokeObjectURL(url); // Free up memory
+    } catch (error) {
+      console.error("Error exporting users:", error);
+      alert("Failed to export users. Please try again.");
+    }
+  };
 
   const containerVariants = {
     hidden: { opacity: 0 },
@@ -282,7 +346,7 @@ const AdminUsers = () => {
           </p>
         </div>
         <div className="flex gap-3">
-          <Button variant="outline" className="gap-2">
+          <Button variant="outline" className="gap-2" onClick={handleExport}>
             <Download size={16} />
             Export
           </Button>
@@ -340,6 +404,7 @@ const AdminUsers = () => {
               <option value="farmer">Farmer</option>
               <option value="buyer">Buyer</option>
               <option value="admin">Admin</option>
+              {/* Added supplier option */}
             </select>
           </div>
         </div>
@@ -407,6 +472,7 @@ const AdminUsers = () => {
                       key={user._id}
                       user={user}
                       onDelete={handleDelete}
+                      onViewDetails={handleViewDetails} // Passed onViewDetails
                     />
                   ))}
                 </AnimatePresence>
@@ -415,6 +481,87 @@ const AdminUsers = () => {
           </div>
         )}
       </motion.div>
+
+      {/* User Details Modal */}
+      <Dialog open={isDetailsModalOpen} onOpenChange={setIsDetailsModalOpen}>
+        <DialogContent className="sm:max-w-[425px]">
+          <DialogHeader>
+            <DialogTitle>User Details</DialogTitle>
+            <DialogDescription>
+              View the comprehensive details of the selected user.
+            </DialogDescription>
+          </DialogHeader>
+          {selectedUserForDetails ? (
+            <div className="grid gap-4 py-4">
+              <div className="grid grid-cols-4 items-center gap-4">
+                <span className="text-slate-600 font-medium col-span-1">
+                  Name:
+                </span>
+                <span className="col-span-3">
+                  {selectedUserForDetails.name}
+                </span>
+              </div>
+              <div className="grid grid-cols-4 items-center gap-4">
+                <span className="text-slate-600 font-medium col-span-1">
+                  Phone:
+                </span>
+                <span className="col-span-3">
+                  {selectedUserForDetails.phone}
+                </span>
+              </div>
+              <div className="grid grid-cols-4 items-center gap-4">
+                <span className="text-slate-600 font-medium col-span-1">
+                  Role:
+                </span>
+                <span className="col-span-3">
+                  {selectedUserForDetails.role}
+                </span>
+              </div>
+              <div className="grid grid-cols-4 items-center gap-4">
+                <span className="text-slate-600 font-medium col-span-1">
+                  Location:
+                </span>
+                <span className="col-span-3">
+                  {selectedUserForDetails.location || "N/A"}
+                </span>
+              </div>
+              <div className="grid grid-cols-4 items-center gap-4">
+                <span className="text-slate-600 font-medium col-span-1">
+                  Created At:
+                </span>
+                <span className="col-span-3">
+                  {new Date(
+                    selectedUserForDetails.createdAt
+                  ).toLocaleDateString()}
+                </span>
+              </div>
+              <div className="grid grid-cols-4 items-center gap-4">
+                <span className="text-slate-600 font-medium col-span-1">
+                  Status:
+                </span>
+                <span className="col-span-3">
+                  {selectedUserForDetails.approved
+                    ? "Approved"
+                    : "Pending Approval"}
+                </span>
+              </div>
+              <div className="grid grid-cols-4 items-center gap-4">
+                <span className="text-slate-600 font-medium col-span-1">
+                  Blocked:
+                </span>
+                <span className="col-span-3">
+                  {selectedUserForDetails.blocked ? "Yes" : "No"}
+                </span>
+              </div>
+            </div>
+          ) : (
+            <p>Loading user details...</p>
+          )}
+          <DialogFooter>
+            <Button onClick={() => setIsDetailsModalOpen(false)}>Close</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </motion.div>
   );
 };

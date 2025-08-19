@@ -140,12 +140,6 @@ export default function AdminOverview() {
       icon: PackageSearch,
       color: "bg-gradient-to-br from-amber-500 to-orange-500",
     },
-    {
-      label: "Total Revenue",
-      value: `KSh ${data?.totalRevenue?.toLocaleString() || 0}`,
-      icon: DollarSign,
-      color: "bg-gradient-to-br from-purple-500 to-purple-600",
-    },
   ];
 
   const quickActions = [
