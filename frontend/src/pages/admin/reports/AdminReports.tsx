@@ -22,28 +22,71 @@ import {
   AlertTriangle,
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
+import { useNavigate } from "react-router-dom";
+import jsPDF from "jspdf";
+import autoTable from "jspdf-autotable";
 import api from "../../../api/axios";
 import { Skeleton } from "../../../components/ui/skeleton";
 import { Button } from "../../../components/ui/button";
 
 const AdminReports = () => {
+  const navigate = useNavigate();
   const [dateRange, setDateRange] = useState("30");
 
   const { data: stats, isLoading: loadingStats } = useQuery({
-    queryKey: ["admin-dashboard-stats"],
+    queryKey: ["admin-dashboard-stats", dateRange],
     queryFn: async () => {
-      const res = await api.get("/admin/dashboard-stats");
+      const res = await api.get(`/admin/dashboard-stats?days=${dateRange}`);
       return res.data;
     },
   });
 
   const { data: recentOrders, isLoading: loadingOrders } = useQuery({
-    queryKey: ["admin-recent-orders"],
+    queryKey: ["admin-recent-orders", dateRange],
     queryFn: async () => {
-      const res = await api.get("/admin/recent-orders");
+      const res = await api.get(`/admin/recent-orders?days=${dateRange}`);
       return res.data;
     },
   });
+
+  const handleExport = () => {
+    const doc = new jsPDF();
+    let finalY = 0;
+
+    doc.text("Umoja Marketplace - Reports", 20, 10);
+
+    doc.text("Key Metrics", 20, 30);
+    autoTable(doc, {
+      startY: 40,
+      head: [["Metric", "Value"]],
+      body: [
+        ["Total Users", stats?.totalUsers || 0],
+        ["Total Products", stats?.totalProducts || 0],
+        ["Total Orders", stats?.totalOrders || 0],
+        ["Total Revenue", `Ksh ${stats?.totalRevenue?.toLocaleString() || 0}`],
+      ],
+      didDrawPage: (data) => {
+        if (data.cursor) {
+          finalY = data.cursor.y;
+        }
+      },
+    });
+
+    doc.text("Recent Orders", 20, finalY + 10);
+    autoTable(doc, {
+      startY: finalY + 20,
+      head: [["Customer", "Farmer", "Products", "Total", "Date"]],
+      body: recentOrders.map((order: any) => [
+        order.buyerName,
+        order.farmerName,
+        order.products.map((p: any) => p.name).join(", "),
+        `Ksh ${order.total?.toLocaleString()}`,
+        new Date(order.createdAt).toLocaleDateString(),
+      ]),
+    });
+
+    doc.save("report.pdf");
+  };
 
   const containerVariants = {
     hidden: { opacity: 0 },
@@ -99,7 +142,7 @@ const AdminReports = () => {
               <option value="365">Last year</option>
             </select>
           </div>
-          <Button variant="outline" className="gap-2">
+          <Button variant="outline" className="gap-2" onClick={handleExport}>
             <Download size={16} />
             Export Report
           </Button>
@@ -210,14 +253,24 @@ const AdminReports = () => {
               </p>
             </div>
             <div className="flex gap-2">
-              <Button variant="outline" size="sm" className="gap-2">
-                <Filter size={14} />
-                Filter
-              </Button>
-              <Button variant="outline" size="sm" className="gap-2">
-                <Eye size={14} />
-                View All
-              </Button>
+              <Button
+            variant="outline"
+            size="sm"
+            className="gap-2"
+            onClick={() => console.log("Filter button clicked")}
+          >
+            <Filter size={14} />
+            Filter
+          </Button>
+          <Button
+            variant="outline"
+            size="sm"
+            className="gap-2"
+            onClick={() => navigate("/admin/dashboard/orders")}
+          >
+            <Eye size={14} />
+            View All
+          </Button>
             </div>
           </div>
         </div>

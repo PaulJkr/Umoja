@@ -150,42 +150,6 @@ const AdminProducts = () => {
             </div>
           </div>
         </div>
-
-        <div className="bg-white rounded-xl p-6 border border-slate-200 shadow-sm">
-          <div className="flex items-center gap-4">
-            <div className="p-3 rounded-xl bg-gradient-to-br from-green-500 to-green-600">
-              <Package className="w-6 h-6 text-white" />
-            </div>
-            <div>
-              <p className="text-sm font-medium text-slate-600">Active</p>
-              <p className="text-2xl font-bold text-slate-900">--</p>
-            </div>
-          </div>
-        </div>
-
-        <div className="bg-white rounded-xl p-6 border border-slate-200 shadow-sm">
-          <div className="flex items-center gap-4">
-            <div className="p-3 rounded-xl bg-gradient-to-br from-amber-500 to-orange-500">
-              <Package className="w-6 h-6 text-white" />
-            </div>
-            <div>
-              <p className="text-sm font-medium text-slate-600">Pending</p>
-              <p className="text-2xl font-bold text-slate-900">--</p>
-            </div>
-          </div>
-        </div>
-
-        <div className="bg-white rounded-xl p-6 border border-slate-200 shadow-sm">
-          <div className="flex items-center gap-4">
-            <div className="p-3 rounded-xl bg-gradient-to-br from-red-500 to-red-600">
-              <Package className="w-6 h-6 text-white" />
-            </div>
-            <div>
-              <p className="text-sm font-medium text-slate-600">Rejected</p>
-              <p className="text-2xl font-bold text-slate-900">--</p>
-            </div>
-          </div>
-        </div>
       </motion.div>
 
       {/* Filters and Controls */}

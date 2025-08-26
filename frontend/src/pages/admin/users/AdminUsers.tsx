@@ -536,7 +536,7 @@ const AdminUsers = () => {
                   Status:
                 </span>
                 <span className="col-span-3">
-                  {selectedUserForDetails.approved
+                  {selectedUserForDetails.role === "admin" ? "Protected" : selectedUserForDetails.approved
                     ? "Approved"
                     : "Pending Approval"}
                 </span>

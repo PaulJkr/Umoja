@@ -20,6 +20,7 @@ const {
   approveUser,
   approveProduct,
   exportUsers,
+  getOverviewStats,
 } = require("../controllers/adminController");
 const verifyToken = require("../middleware/auth");
 
@@ -37,6 +38,7 @@ const isAdmin = (req, res, next) => {
 
 // Stats and Dashboard
 router.get("/dashboard-stats", getDashboardStats);
+router.get("/overview-stats", getOverviewStats);
 router.get("/recent-orders", getRecentOrders);
 router.get("/stats", verifyToken, isAdmin, getDashboardStats);
 

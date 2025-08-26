@@ -24,6 +24,40 @@ const escapeCsv = (value) => {
 // Dashboard Stats - SINGLE VERSION
 exports.getDashboardStats = async (req, res) => {
   try {
+    const { days } = req.query;
+    let dateFilter = {};
+    if (days) {
+      const date = new Date();
+      date.setDate(date.getDate() - days);
+      dateFilter = { createdAt: { $gte: date } };
+    }
+
+    const [totalUsers, totalProducts, totalOrders, orders] = await Promise.all([
+      User.countDocuments(dateFilter),
+      Product.countDocuments(dateFilter),
+      Order.countDocuments(dateFilter),
+      Order.find(dateFilter, "totalAmount"),
+    ]);
+
+    const totalRevenue = orders.reduce(
+      (sum, order) => sum + (order.totalAmount || 0),
+      0
+    );
+
+    res.json({
+      totalUsers,
+      totalProducts,
+      totalOrders,
+      totalRevenue,
+    });
+  } catch (err) {
+    console.error("Admin stats error:", err);
+    res.status(500).json({ msg: "Server error while fetching stats" });
+  }
+};
+
+exports.getOverviewStats = async (req, res) => {
+  try {
     const [totalUsers, totalProducts, totalOrders, orders] = await Promise.all([
       User.countDocuments(),
       Product.countDocuments(),
@@ -329,7 +363,15 @@ exports.deleteProduct = async (req, res) => {
 // Orders
 exports.getRecentOrders = async (req, res) => {
   try {
-    const orders = await Order.find()
+    const { days } = req.query;
+    let dateFilter = {};
+    if (days) {
+      const date = new Date();
+      date.setDate(date.getDate() - days);
+      dateFilter = { createdAt: { $gte: date } };
+    }
+
+    const orders = await Order.find(dateFilter)
       .sort({ createdAt: -1 })
       .limit(10)
       .populate("buyerId", "name")

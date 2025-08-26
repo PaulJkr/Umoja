@@ -20,7 +20,7 @@ import { motion } from "framer-motion";
 import api from "../../../api/axios";
 
 const fetchDashboardStats = async () => {
-  const res = await api.get("/admin/stats");
+  const res = await api.get("/admin/overview-stats");
   return res.data;
 };
 
