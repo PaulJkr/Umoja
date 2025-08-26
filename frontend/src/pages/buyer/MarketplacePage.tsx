@@ -431,7 +431,11 @@ const MarketplacePage = () => {
                     )}
 
                     <motion.button
-                      onClick={() =>
+                      onClick={() => {
+                        if (product.quantity === 0) {
+                          toast.error("This product is out of stock.");
+                          return;
+                        }
                         addToCart({
                           id: product._id,
                           name: product.name,
@@ -439,8 +443,8 @@ const MarketplacePage = () => {
                           image: product.imageUrl || "",
                           quantity: 1,
                           sellerId: product.seller?._id ?? "",
-                        })
-                      }
+                        });
+                      }}
                       whileHover={{ scale: 1.02 }}
                       whileTap={{ scale: 0.98 }}
                       className="w-full bg-slate-900 text-white py-2.5 rounded-lg font-medium hover:bg-slate-800 transition-colors flex items-center justify-center gap-2"

@@ -22,6 +22,7 @@ const {
   exportUsers,
   getOverviewStats,
   getAllOrders,
+  sendSms,
 } = require("../controllers/adminController");
 const verifyToken = require("../middleware/auth");
 
@@ -73,5 +74,8 @@ router.get("/pending-approvals", verifyToken, isAdmin, getPendingApprovals);
 router.patch("/approve-user/:id", verifyToken, isAdmin, approveUser);
 router.patch("/approve-product/:id", verifyToken, isAdmin, approveProduct);
 router.get("/orders", verifyToken, isAdmin, getAllOrders);
+router.post("/send-sms", verifyToken, isAdmin, sendSms);
+
+
 
 module.exports = router;

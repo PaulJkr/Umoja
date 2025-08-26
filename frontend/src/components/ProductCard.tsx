@@ -2,6 +2,7 @@ import React from "react";
 import { User, PhoneCall, Trash2, Edit } from "lucide-react";
 import { Product } from "../services/product";
 import { toast } from "react-toastify";
+import api from "../api/axios";
 
 interface ProductCardProps {
   product: Product;
@@ -36,6 +37,30 @@ const ProductCard: React.FC<ProductCardProps> = ({
 
     // If it doesn't start with /uploads, add it
     return `/uploads/${imageUrl.replace(/^\/+/, "")}`;
+  };
+
+  const handleBuyClick = async () => {
+    if (disableBuy || isLoading) {
+      toast.info("⏳ Please wait...");
+      return;
+    }
+
+    if (product.quantity === 0) {
+      try {
+        await api.post("/admin/send-sms", {
+          to: product.seller?.phone,
+          message: `Your product ${product.name} is out of stock.`,
+        });
+        toast.success("A notification has been sent to the farmer.");
+      } catch (error) {
+        console.error("Failed to send SMS:", error);
+        toast.error("Failed to send notification to the farmer.");
+      }
+    }
+
+    if (onBuyClick) {
+      onBuyClick(product);
+    }
   };
 
   return (
@@ -90,13 +115,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
       <div className="mt-4 space-y-2">
         {onBuyClick && (
           <button
-            onClick={() => {
-              if (disableBuy || isLoading) {
-                toast.info("⏳ Please wait...");
-                return;
-              }
-              onBuyClick(product);
-            }}
+            onClick={handleBuyClick}
             disabled={disableBuy || isLoading}
             className="w-full bg-green-600 text-white py-2 rounded hover:bg-green-700 transition disabled:opacity-50"
           >

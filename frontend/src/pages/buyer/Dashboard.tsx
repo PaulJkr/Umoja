@@ -34,11 +34,6 @@ const BuyerDashboard = () => {
   const [newSellersCount, setNewSellersCount] = useState<number>(0);
   const [unreadMessages, setUnreadMessages] = useState<number>(0);
 
-  useEffect(() => {
-    setNewSellersCount(3); // mock
-    setUnreadMessages(2); // mock
-  }, []);
-
   const tabs = [
     { id: "explore", label: "Explore", icon: ShoppingBag },
     { id: "orders", label: "My Orders", icon: History },

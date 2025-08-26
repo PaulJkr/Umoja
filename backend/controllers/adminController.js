@@ -2,7 +2,6 @@ const User = require("../models/User");
 const Product = require("../models/Product");
 const Order = require("../models/Order");
 const Settings = require("../models/Settings");
-const sendSMS = require("../utils/smsSimulator");
 const PDFDocument = require("pdfkit");
 
 // CSV escape function - DECLARED ONLY ONCE
@@ -504,5 +503,17 @@ exports.getAllOrders = async (req, res) => {
     res.json({ orders: formattedOrders, totalPages: Math.ceil(totalOrders / limit) });
   } catch (err) {
     res.status(500).json({ error: "Failed to fetch all orders" });
+  }
+};
+
+exports.sendSms = async (req, res) => {
+  const { to, message } = req.body;
+
+  try {
+    await sendSMS(to, message);
+    res.json({ msg: "SMS sent successfully" });
+  } catch (err) {
+    console.error("Send SMS error:", err);
+    res.status(500).json({ msg: "Server error while sending SMS" });
   }
 };
