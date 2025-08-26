@@ -212,31 +212,6 @@ const AdminReports = () => {
         )}
       </motion.div>
 
-      {/* Quick Reports */}
-      <motion.div
-        variants={itemVariants}
-        className="grid grid-cols-1 lg:grid-cols-3 gap-6"
-      >
-        <QuickReportCard
-          title="User Growth"
-          description="Monthly user registration trends"
-          icon={BarChart3}
-          color="from-blue-500 to-indigo-600"
-        />
-        <QuickReportCard
-          title="Sales Analysis"
-          description="Product performance metrics"
-          icon={PieChart}
-          color="from-emerald-500 to-green-600"
-        />
-        <QuickReportCard
-          title="Revenue Trends"
-          description="Financial performance overview"
-          icon={TrendingUp}
-          color="from-purple-500 to-pink-600"
-        />
-      </motion.div>
-
       {/* Recent Orders */}
       <motion.div
         variants={itemVariants}
@@ -254,23 +229,23 @@ const AdminReports = () => {
             </div>
             <div className="flex gap-2">
               <Button
-            variant="outline"
-            size="sm"
-            className="gap-2"
-            onClick={() => console.log("Filter button clicked")}
-          >
-            <Filter size={14} />
-            Filter
-          </Button>
-          <Button
-            variant="outline"
-            size="sm"
-            className="gap-2"
-            onClick={() => navigate("/admin/dashboard/orders")}
-          >
-            <Eye size={14} />
-            View All
-          </Button>
+                variant="outline"
+                size="sm"
+                className="gap-2"
+                onClick={() => console.log("Filter button clicked")}
+              >
+                <Filter size={14} />
+                Filter
+              </Button>
+              <Button
+                variant="outline"
+                size="sm"
+                className="gap-2"
+                onClick={() => navigate("/admin/dashboard/orders")}
+              >
+                <Eye size={14} />
+                View All
+              </Button>
             </div>
           </div>
         </div>

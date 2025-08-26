@@ -382,7 +382,7 @@ exports.getRecentOrders = async (req, res) => {
       _id: order._id,
       buyerName: order.buyerId ? order.buyerId.name : "N/A",
       farmerName: order.sellerId ? order.sellerId.name : "N/A",
-      total: order.totalAmount,
+      total: order.total,
       createdAt: order.createdAt,
       products: order.products
         ? order.products.map((p) => ({
@@ -471,5 +471,38 @@ exports.updateSettings = async (req, res) => {
   } catch (err) {
     console.error("Update settings error:", err);
     res.status(500).json({ msg: "Server error while updating settings" });
+  }
+};
+
+exports.getAllOrders = async (req, res) => {
+  const { page = 1, limit = 10 } = req.query;
+
+  try {
+    const orders = await Order.find()
+      .sort({ createdAt: -1 })
+      .limit(parseInt(limit))
+      .skip((page - 1) * limit)
+      .populate("buyerId", "name")
+      .populate("sellerId", "name")
+      .populate("products.productId", "name");
+
+    const totalOrders = await Order.countDocuments();
+
+    const formattedOrders = orders.map((order) => ({
+      _id: order._id,
+      buyerName: order.buyerId ? order.buyerId.name : "N/A",
+      farmerName: order.sellerId ? order.sellerId.name : "N/A",
+      total: order.total,
+      createdAt: order.createdAt,
+      products: order.products
+        ? order.products.map((p) => ({
+            name: p.productId && p.productId.name ? p.productId.name : "N/A",
+          }))
+        : [],
+    }));
+
+    res.json({ orders: formattedOrders, totalPages: Math.ceil(totalOrders / limit) });
+  } catch (err) {
+    res.status(500).json({ error: "Failed to fetch all orders" });
   }
 };
