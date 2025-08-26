@@ -239,9 +239,6 @@ const BuyerDashboard = () => {
 
           <div className="flex items-center space-x-3">
             <button className="p-2 hover:bg-slate-100 rounded-lg text-slate-600 relative"></button>
-            <button className="p-2 hover:bg-slate-100 rounded-lg text-slate-600">
-              <Settings className="w-5 h-5" />
-            </button>
             <div className="w-8 h-8 bg-gradient-to-br from-emerald-500 to-teal-600 rounded-full flex items-center justify-center">
               <span className="text-white font-semibold text-sm">
                 {user?.name?.charAt(0) ?? "B"}
