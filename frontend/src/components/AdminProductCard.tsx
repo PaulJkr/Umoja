@@ -27,7 +27,7 @@ const AdminProductCard = ({ product }: Props) => {
   };
 
   return (
-    <div className="flex items-center justify-between p-4 border rounded-md shadow-sm">
+    <div className="flex flex-col md:flex-row items-start md:items-center justify-between p-4 border rounded-md shadow-sm">
       <div className="flex items-center gap-4">
         {product.imageUrl ? (
           <img
@@ -52,7 +52,7 @@ const AdminProductCard = ({ product }: Props) => {
         </div>
       </div>
 
-      <div className="flex items-center gap-2">
+      <div className="flex flex-col md:flex-row items-end md:items-center gap-2 mt-4 md:mt-0">
         <Button
           variant={product.inStock ? "outline" : "default"}
           onClick={handleToggleStock}

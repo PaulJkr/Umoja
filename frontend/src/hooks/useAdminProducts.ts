@@ -15,6 +15,7 @@ export const useAdminProducts = ({
   search,
   page,
   limit,
+  sort,
 }: {
   category?: string;
   type?: string;
@@ -22,15 +23,17 @@ export const useAdminProducts = ({
   search?: string;
   page: number;
   limit: number;
+  sort?: string;
 }) => {
   return useQuery<AdminProductResponse>({
-    queryKey: ["admin-products", category, type, farmer, search, page, limit],
+    queryKey: ["admin-products", category, type, farmer, search, page, limit, sort],
     queryFn: async () => {
       const params = new URLSearchParams();
       if (category) params.append("category", category);
       if (type) params.append("type", type);
       if (farmer) params.append("farmer", farmer);
       if (search) params.append("search", search);
+      if (sort) params.append("sort", sort);
       params.append("page", page.toString());
       params.append("limit", limit.toString());
 

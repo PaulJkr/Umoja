@@ -114,9 +114,43 @@ exports.deleteProduct = async (req, res) => {
 };
 
 exports.getProductsForAdmin = async (req, res) => {
+  const { search, sort, page = 1, limit = 10 } = req.query;
+
+  const query = {};
+  if (search) {
+    query.name = { $regex: search, $options: "i" };
+  }
+
+  const sortOptions = {};
+  if (sort) {
+    switch (sort) {
+      case "newest":
+        sortOptions.createdAt = -1;
+        break;
+      case "oldest":
+        sortOptions.createdAt = 1;
+        break;
+      case "name":
+        sortOptions.name = 1;
+        break;
+      case "price":
+        sortOptions.price = 1;
+        break;
+      default:
+        break;
+    }
+  }
+
   try {
-    const products = await Product.find({}).populate("ownerId", "name");
-    res.json(products);
+    const products = await Product.find(query)
+      .sort(sortOptions)
+      .limit(parseInt(limit))
+      .skip((page - 1) * limit)
+      .populate("ownerId", "name");
+
+    const totalProducts = await Product.countDocuments(query);
+
+    res.json({ products, totalPages: Math.ceil(totalProducts / limit) });
   } catch (err) {
     res.status(500).json({ msg: "Error fetching products for admin" });
   }

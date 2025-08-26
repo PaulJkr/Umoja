@@ -14,6 +14,8 @@ import {
   AlertTriangle,
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
+import jsPDF from "jspdf";
+import autoTable from "jspdf-autotable";
 import { useAdminProducts } from "../../../hooks/useAdminProducts";
 import AdminProductCard from "../../../components/AdminProductCard";
 import { Skeleton } from "../../../components/ui/skeleton";
@@ -25,11 +27,32 @@ const AdminProducts = () => {
   const [viewMode, setViewMode] = useState<"grid" | "list">("list");
   const [sortBy, setSortBy] = useState("newest");
 
-  const { data, isLoading } = useAdminProducts({ page, limit: 10 });
+  const { data, isLoading } = useAdminProducts({
+    page,
+    limit: 10,
+    search: searchTerm,
+    sort: sortBy,
+  });
 
   const products = data?.products || [];
   const totalPages = data?.totalPages || 1;
   const totalProducts = data?.products.length || 0;
+
+  const handleExport = () => {
+    const doc = new jsPDF();
+    doc.text("Product List", 20, 10);
+    autoTable(doc, {
+      head: [["Name", "Type", "Price", "In Stock", "Farmer"]],
+      body: products.map((product) => [
+        product.name,
+        product.type,
+        `Ksh ${product.price.toLocaleString()}`,
+        product.inStock ? "Yes" : "No",
+        product.ownerId?.name || "Unknown",
+      ]),
+    });
+    doc.save("products.pdf");
+  };
 
   const ProductSkeleton = () => (
     <div className="bg-white rounded-xl p-6 border border-slate-200">
@@ -100,13 +123,9 @@ const AdminProducts = () => {
           </p>
         </div>
         <div className="flex gap-3">
-          <Button variant="outline" className="gap-2">
+          <Button variant="outline" className="gap-2" onClick={handleExport}>
             <Download size={16} />
             Export
-          </Button>
-          <Button className="gap-2 bg-indigo-600 hover:bg-indigo-700">
-            <Plus size={16} />
-            Add Product
           </Button>
         </div>
       </motion.div>

@@ -174,41 +174,66 @@ exports.exportUsers = async (req, res) => {
   try {
     const users = await User.find({}, "-password");
 
-    const doc = new PDFDocument();
+    const doc = new PDFDocument({
+      margin: 50,
+    });
 
     res.setHeader("Content-Type", "application/pdf");
     res.setHeader("Content-Disposition", 'attachment; filename="users.pdf"');
 
     doc.pipe(res);
 
+    // Header
     doc
-      .fontSize(16)
+      .fontSize(18)
+      .font("Helvetica-Bold")
       .text("Umoja Marketplace - User Report", { align: "center" });
     doc.moveDown();
 
-    // Table Headers
-    doc.fontSize(10).text("ID", 50, doc.y, { width: 100, continued: true });
-    doc.text("Name", 150, doc.y, { width: 100, continued: true });
-    doc.text("Phone", 250, doc.y, { width: 100, continued: true });
-    doc.text("Role", 350, doc.y, { width: 80, continued: true });
-    doc.text("Approved", 430, doc.y, { width: 80 });
-    doc.moveDown();
-    doc.lineWidth(0.5);
-    doc.lineCap("butt").moveTo(50, doc.y).lineTo(550, doc.y).stroke();
-    doc.moveDown(0.5);
+    // Table configuration
+    const tableTop = doc.y;
+    const item = {
+      headers: ["Name", "Phone", "Role", "Joined", "Status"],
+      rows: users.map((user) => [
+        user.name || "N/A",
+        user.phone || "N/A",
+        user.role || "N/A",
+        new Date(user.createdAt).toLocaleDateString(),
+        user.role === "admin" ? "Protected" : user.approved ? "Approved" : "Pending",
+      ]),
+    };
 
-    // Table Rows
-    users.forEach((user) => {
-      doc
-        .fontSize(8)
-        .text(user._id.toString(), 50, doc.y, { width: 100, continued: true });
-      doc.text(user.name || "N/A", 150, doc.y, { width: 100, continued: true });
-      doc.text(user.phone || "N/A", 250, doc.y, {
-        width: 100,
-        continued: true,
+    // Calculate column widths
+    const table = {
+      headers: item.headers,
+      rows: item.rows,
+      columnWidths: [120, 100, 80, 100, 80],
+    };
+
+    // Draw table header
+    doc.font("Helvetica-Bold").fontSize(10);
+    let y = tableTop;
+    doc.y = y;
+    table.headers.forEach((header, i) => {
+      doc.text(header, 50 + table.columnWidths.slice(0, i).reduce((a, b) => a + b, 0), y, {
+        width: table.columnWidths[i],
+        align: "left",
       });
-      doc.text(user.role || "N/A", 350, doc.y, { width: 80, continued: true });
-      doc.text(user.approved ? "Yes" : "No", 430, doc.y, { width: 80 });
+    });
+    y += 20;
+    doc.moveTo(50, y).lineTo(550, y).stroke();
+    doc.moveDown();
+
+    // Draw table rows
+    doc.font("Helvetica").fontSize(9);
+    table.rows.forEach((row) => {
+      y = doc.y;
+      row.forEach((text, i) => {
+        doc.text(text, 50 + table.columnWidths.slice(0, i).reduce((a, b) => a + b, 0), y, {
+          width: table.columnWidths[i],
+          align: "left",
+        });
+      });
       doc.moveDown();
     });
 

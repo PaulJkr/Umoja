@@ -278,46 +278,6 @@ export default function AdminOverview() {
           ))}
         </div>
       </motion.div>
-
-      <motion.div
-        variants={itemVariants}
-        className="bg-white rounded-2xl p-6 shadow-sm border border-slate-200"
-      >
-        <div className="flex items-center justify-between mb-6">
-          <h2 className="text-xl font-semibold text-slate-900">
-            Recent Activity
-          </h2>
-          <motion.button
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
-            className="text-indigo-600 hover:text-indigo-700 font-medium text-sm transition-colors"
-          >
-            View All
-          </motion.button>
-        </div>
-
-        <div className="space-y-4">
-          {[...Array(3)].map((_, i) => (
-            <motion.div
-              key={i}
-              initial={{ opacity: 0, x: -20 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.3, delay: 0.5 + i * 0.1 }}
-              className="flex items-center gap-4 p-3 rounded-lg hover:bg-slate-50 transition-colors"
-            >
-              <div className="w-2 h-2 bg-indigo-500 rounded-full" />
-              <div className="flex-1">
-                <p className="text-sm font-medium text-slate-900">
-                  Activity item {i + 1}
-                </p>
-                <p className="text-xs text-slate-500">
-                  {new Date().toLocaleTimeString()}
-                </p>
-              </div>
-            </motion.div>
-          ))}
-        </div>
-      </motion.div>
     </motion.div>
   );
 }

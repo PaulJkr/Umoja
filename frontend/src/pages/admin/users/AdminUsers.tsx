@@ -350,10 +350,6 @@ const AdminUsers = () => {
             <Download size={16} />
             Export
           </Button>
-          <Button className="gap-2 bg-indigo-600 hover:bg-indigo-700">
-            <UserPlus size={16} />
-            Add User
-          </Button>
         </div>
       </motion.div>
 

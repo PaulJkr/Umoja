@@ -21,6 +21,7 @@ const productSchema = new mongoose.Schema(
     imageUrl: { type: String },
     certification: { type: String }, // for seed/fertilizer
     verified: { type: Boolean, default: false }, // admin approval for suppliers
+    inStock: { type: Boolean, default: true },
   },
   { timestamps: true }
 );
