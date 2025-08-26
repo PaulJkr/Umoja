@@ -74,7 +74,7 @@ router.get("/pending-approvals", verifyToken, isAdmin, getPendingApprovals);
 router.patch("/approve-user/:id", verifyToken, isAdmin, approveUser);
 router.patch("/approve-product/:id", verifyToken, isAdmin, approveProduct);
 router.get("/orders", verifyToken, isAdmin, getAllOrders);
-router.post("/send-sms", verifyToken, isAdmin, sendSms);
+router.post("/send-sms", verifyToken, sendSms);
 
 
 

@@ -432,8 +432,19 @@ const MarketplacePage = () => {
 
                     <motion.button
                       onClick={() => {
+                        console.log("Add to Cart button clicked for product:", product);
                         if (product.quantity === 0) {
+                          console.log("Product quantity is 0. Attempting to send SMS.");
                           toast.error("This product is out of stock.");
+                          // Call the API to send SMS
+                          api.post("/admin/send-sms", {
+                            to: product.seller?.phone,
+                            message: `Your product ${product.name} is out of stock.`,
+                          }).then(() => {
+                            console.log("SMS API call successful.");
+                          }).catch((error) => {
+                            console.error("SMS API call failed:", error);
+                          });
                           return;
                         }
                         addToCart({

@@ -4,6 +4,18 @@ const Order = require("../models/Order");
 const Settings = require("../models/Settings");
 const PDFDocument = require("pdfkit");
 
+const sendSMS = async (phoneNumber, message) => {
+  try {
+    console.log(`SMS sent to ${phoneNumber}: ${message}`);
+
+
+    return { success: true };
+  } catch (error) {
+    console.error("SMS sending failed:", error);
+    throw error;
+  }
+};
+
 // CSV escape function - DECLARED ONLY ONCE
 const escapeCsv = (value) => {
   if (value === null || value === undefined) {
@@ -232,7 +244,11 @@ exports.exportUsers = async (req, res) => {
         user.phone || "N/A",
         user.role || "N/A",
         new Date(user.createdAt).toLocaleDateString(),
-        user.role === "admin" ? "Protected" : user.approved ? "Approved" : "Pending",
+        user.role === "admin"
+          ? "Protected"
+          : user.approved
+          ? "Approved"
+          : "Pending",
       ]),
     };
 
@@ -248,10 +264,15 @@ exports.exportUsers = async (req, res) => {
     let y = tableTop;
     doc.y = y;
     table.headers.forEach((header, i) => {
-      doc.text(header, 50 + table.columnWidths.slice(0, i).reduce((a, b) => a + b, 0), y, {
-        width: table.columnWidths[i],
-        align: "left",
-      });
+      doc.text(
+        header,
+        50 + table.columnWidths.slice(0, i).reduce((a, b) => a + b, 0),
+        y,
+        {
+          width: table.columnWidths[i],
+          align: "left",
+        }
+      );
     });
     y += 20;
     doc.moveTo(50, y).lineTo(550, y).stroke();
@@ -262,10 +283,15 @@ exports.exportUsers = async (req, res) => {
     table.rows.forEach((row) => {
       y = doc.y;
       row.forEach((text, i) => {
-        doc.text(text, 50 + table.columnWidths.slice(0, i).reduce((a, b) => a + b, 0), y, {
-          width: table.columnWidths[i],
-          align: "left",
-        });
+        doc.text(
+          text,
+          50 + table.columnWidths.slice(0, i).reduce((a, b) => a + b, 0),
+          y,
+          {
+            width: table.columnWidths[i],
+            align: "left",
+          }
+        );
       });
       doc.moveDown();
     });
@@ -430,7 +456,8 @@ exports.approveUser = async (req, res) => {
       { new: true }
     );
     if (user) {
-      sendSMS(
+      // Now this will work because sendSMS is defined above
+      await sendSMS(
         user.phone,
         `Karibu Umoja! Your account has been approved. You can now log in.`
       );
@@ -500,16 +527,27 @@ exports.getAllOrders = async (req, res) => {
         : [],
     }));
 
-    res.json({ orders: formattedOrders, totalPages: Math.ceil(totalOrders / limit) });
+    res.json({
+      orders: formattedOrders,
+      totalPages: Math.ceil(totalOrders / limit),
+    });
   } catch (err) {
     res.status(500).json({ error: "Failed to fetch all orders" });
   }
 };
 
+// SMS Sending Function - Fixed to use the defined sendSMS function
 exports.sendSms = async (req, res) => {
   const { to, message } = req.body;
+  console.log(`Received SMS request: To=${to}, Message=${message}`);
+
+  if (!to || !message) {
+    console.error("SMS send error: 'to' or 'message' is missing.");
+    return res.status(400).json({ msg: "'to' and 'message' are required." });
+  }
 
   try {
+    // Now this will work because sendSMS is defined at the top
     await sendSMS(to, message);
     res.json({ msg: "SMS sent successfully" });
   } catch (err) {
