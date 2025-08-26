@@ -11,8 +11,18 @@ import {
   CheckCircle,
   XCircle,
   AlertCircle,
+  Phone,
 } from "lucide-react";
 import { useAuthStore } from "../../context/authStore";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+  DialogFooter,
+} from "../../components/ui/dialog";
+import { Button } from "../../components/ui/button";
 
 interface Order {
   _id: string;
@@ -102,6 +112,9 @@ const EmptyState = () => (
 const OrdersPage = () => {
   const { user, loadUserFromStorage } = useAuthStore();
   const [visibleCount, setVisibleCount] = useState(3);
+  const [selectedOrderForDetails, setSelectedOrderForDetails] =
+    useState<Order | null>(null);
+  const [isDetailsModalOpen, setIsDetailsModalOpen] = useState(false);
 
   useEffect(() => {
     loadUserFromStorage();
@@ -164,6 +177,11 @@ const OrdersPage = () => {
   const visibleOrders = sortedOrders.slice(0, visibleCount);
   const hasMoreOrders = sortedOrders.length > visibleCount;
 
+  const handleViewDetails = (order: Order) => {
+    setSelectedOrderForDetails(order);
+    setIsDetailsModalOpen(true);
+  };
+
   return (
     <div className="p-6 max-w-4xl mx-auto">
       <motion.div
@@ -195,7 +213,13 @@ const OrdersPage = () => {
               className="space-y-4"
             >
               {visibleOrders.map((order, index) => {
-                const product = order.products[0];
+                const product = order.products?.[0];
+
+                // Skip rendering if no product data
+                if (!product?.productId) {
+                  return null;
+                }
+
                 return (
                   <motion.div
                     key={order._id}
@@ -215,6 +239,11 @@ const OrdersPage = () => {
                             <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-slate-100 text-slate-700 border border-slate-200">
                               {product.productId.type || "Product"}
                             </span>
+                            {order.products.length > 1 && (
+                              <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-700 border border-blue-200">
+                                +{order.products.length - 1} more
+                              </span>
+                            )}
                           </div>
                         </div>
                         <div
@@ -251,9 +280,13 @@ const OrdersPage = () => {
                             </span>
                             <span className="text-lg font-bold text-emerald-600">
                               KES{" "}
-                              {(
-                                product.productId.price * product.quantity
-                              ).toLocaleString()}
+                              {order.products
+                                .reduce(
+                                  (sum, item) =>
+                                    sum + item.productId.price * item.quantity,
+                                  0
+                                )
+                                .toLocaleString()}
                             </span>
                           </div>
                         </div>
@@ -263,6 +296,11 @@ const OrdersPage = () => {
                             <User className="w-4 h-4 flex-shrink-0" />
                             <span className="font-medium">Seller:</span>
                             <span>{order.sellerId.name}</span>
+                          </div>
+                          <div className="flex items-center gap-2 text-sm text-slate-600">
+                            <Phone className="w-4 h-4 flex-shrink-0" />
+                            <span className="font-medium">Phone:</span>
+                            <span>{order.sellerId.phone}</span>
                           </div>
                           <div className="flex items-center gap-2 text-sm text-slate-600">
                             <CalendarDays className="w-4 h-4 flex-shrink-0" />
@@ -286,7 +324,10 @@ const OrdersPage = () => {
                           <span className="text-xs text-slate-500">
                             Order ID: {order._id.slice(-8)}
                           </span>
-                          <button className="text-sm text-slate-600 hover:text-slate-900 font-medium transition-colors">
+                          <button
+                            onClick={() => handleViewDetails(order)}
+                            className="text-sm text-slate-600 hover:text-slate-900 font-medium transition-colors"
+                          >
                             View Details
                           </button>
                         </div>
@@ -312,6 +353,122 @@ const OrdersPage = () => {
           </>
         )}
       </AnimatePresence>
+
+      {/* Order Details Modal */}
+      <Dialog open={isDetailsModalOpen} onOpenChange={setIsDetailsModalOpen}>
+        <DialogContent className="sm:max-w-[500px]">
+          <DialogHeader>
+            <DialogTitle>Order Details</DialogTitle>
+            <DialogDescription>
+              Comprehensive details of your order.
+            </DialogDescription>
+          </DialogHeader>
+          {selectedOrderForDetails && (
+            <div className="grid gap-4 py-4">
+              <div className="space-y-3">
+                <div className="flex justify-between items-center">
+                  <span className="text-slate-600 font-medium">Order ID:</span>
+                  <span className="text-sm font-mono bg-slate-100 px-2 py-1 rounded">
+                    {selectedOrderForDetails._id}
+                  </span>
+                </div>
+
+                <div className="flex justify-between items-center">
+                  <span className="text-slate-600 font-medium">Status:</span>
+                  <div
+                    className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-sm font-medium border ${getStatusColor(
+                      selectedOrderForDetails.status
+                    )}`}
+                  >
+                    {getStatusIcon(selectedOrderForDetails.status)}
+                    <span className="capitalize">
+                      {selectedOrderForDetails.status}
+                    </span>
+                  </div>
+                </div>
+
+                <div className="flex justify-between items-center">
+                  <span className="text-slate-600 font-medium">Seller:</span>
+                  <div className="text-right">
+                    <div className="font-medium">
+                      {selectedOrderForDetails.sellerId.name}
+                    </div>
+                    <div className="text-sm text-slate-600">
+                      {selectedOrderForDetails.sellerId.phone}
+                    </div>
+                  </div>
+                </div>
+
+                <div className="flex justify-between items-center">
+                  <span className="text-slate-600 font-medium">
+                    Order Date:
+                  </span>
+                  <span>
+                    {new Date(
+                      selectedOrderForDetails.createdAt
+                    ).toLocaleDateString("en-US", {
+                      weekday: "short",
+                      year: "numeric",
+                      month: "short",
+                      day: "numeric",
+                      hour: "2-digit",
+                      minute: "2-digit",
+                    })}
+                  </span>
+                </div>
+              </div>
+
+              <div className="border-t border-slate-200 pt-4">
+                <h4 className="text-slate-600 font-medium mb-3">Products:</h4>
+                <div className="space-y-3">
+                  {selectedOrderForDetails.products.map((item, idx) => (
+                    <div
+                      key={idx}
+                      className="flex justify-between items-center p-3 bg-slate-50 rounded-lg"
+                    >
+                      <div>
+                        <div className="font-medium">{item.productId.name}</div>
+                        <div className="text-sm text-slate-600">
+                          {item.productId.type} • Quantity: {item.quantity}
+                        </div>
+                        <div className="text-sm text-slate-600">
+                          KES {item.productId.price.toLocaleString()} per item
+                        </div>
+                      </div>
+                      <div className="text-right">
+                        <div className="font-bold text-emerald-600">
+                          KES{" "}
+                          {(
+                            item.productId.price * item.quantity
+                          ).toLocaleString()}
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              <div className="flex justify-between items-center pt-4 border-t border-slate-200">
+                <span className="text-lg font-semibold text-slate-900">
+                  Total Amount:
+                </span>
+                <span className="text-xl font-bold text-emerald-600">
+                  KES{" "}
+                  {selectedOrderForDetails.products
+                    .reduce(
+                      (sum, item) => sum + item.productId.price * item.quantity,
+                      0
+                    )
+                    .toLocaleString()}
+                </span>
+              </div>
+            </div>
+          )}
+          <DialogFooter>
+            <Button onClick={() => setIsDetailsModalOpen(false)}>Close</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };
