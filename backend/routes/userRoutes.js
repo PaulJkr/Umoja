@@ -1,23 +1,12 @@
 const express = require("express");
 const router = express.Router();
 const User = require("../models/User");
-const bcrypt = require("bcryptjs"); // ✅ Add bcrypt import
-const multer = require("multer");
+const bcrypt = require("bcryptjs");
+const upload = require("../middleware/upload");
 const verifyToken = require("../middleware/auth");
+const path = require("path");
 
-// ✅ Multer setup for avatar uploads
-const storage = multer.diskStorage({
-  destination: function (req, file, cb) {
-    cb(null, "uploads/");
-  },
-  filename: function (req, file, cb) {
-    const uniqueSuffix = Date.now() + "-" + Math.round(Math.random() * 1e9);
-    cb(null, uniqueSuffix + path.extname(file.originalname));
-  },
-});
-const upload = multer({ storage });
-
-// ✅ GET /api/users/sellers - fetch all farmers and suppliers
+//  GET /api/users/sellers - fetch all farmers and suppliers
 router.get("/sellers", async (req, res) => {
   try {
     const sellers = await User.find(
@@ -31,7 +20,7 @@ router.get("/sellers", async (req, res) => {
   }
 });
 
-// ✅ PUT /api/users/profile/:id - update name, phone, location, avatar
+//  PUT /api/users/profile/:id - update name, phone, location, avatar
 router.put("/profile/:id", upload.single("avatar"), async (req, res) => {
   try {
     const { name, phone, location } = req.body;
@@ -67,7 +56,7 @@ router.put("/profile/:id", upload.single("avatar"), async (req, res) => {
   }
 });
 
-// ✅ NEW: GET /api/users/password-status/:id - check if user has password set
+//  NEW: GET /api/users/password-status/:id - check if user has password set
 router.get("/password-status/:id", async (req, res) => {
   try {
     const { id } = req.params;
@@ -94,14 +83,14 @@ router.get("/password-status/:id", async (req, res) => {
   }
 });
 
-// ✅ Enhanced password change route that handles both password change and initial password setting
+//  Enhanced password change route that handles both password change and initial password setting
 router.put("/change-password/:id", async (req, res) => {
   const { currentPassword, newPassword } = req.body;
 
   try {
     console.log(`Password change request for user: ${req.params.id}`);
 
-    // ✅ Validate input
+    //  Validate input
     if (!newPassword) {
       return res.status(400).json({
         msg: "New password is required",
@@ -114,13 +103,13 @@ router.put("/change-password/:id", async (req, res) => {
       });
     }
 
-    // ✅ Find user
+    //  Find user
     const user = await User.findById(req.params.id);
     if (!user) {
       return res.status(404).json({ msg: "User not found" });
     }
 
-    // ✅ Debug: Check what we have
+    //  Debug: Check what we have
     console.log("User found:", {
       id: user._id,
       hasPassword: !!user.passwordHash,
@@ -128,7 +117,7 @@ router.put("/change-password/:id", async (req, res) => {
       hasCompareMethod: typeof user.comparePassword,
     });
 
-    // ✅ Handle two cases: setting initial password OR changing existing password
+    //  Handle two cases: setting initial password OR changing existing password
     if (!user.passwordHash) {
       // Case 1: User has no password set - allow setting initial password
       console.log("Setting initial password for user");

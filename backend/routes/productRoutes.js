@@ -14,7 +14,7 @@ router.post(
   "/",
   verifyToken,
   allowRoles("farmer", "supplier"),
-  upload,
+  upload.single("image"),
   productCtrl.createProduct
 );
 router.get("/mine", verifyToken, productCtrl.getMyProducts);

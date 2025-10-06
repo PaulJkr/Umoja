@@ -40,7 +40,7 @@ const FarmerProfileForm = () => {
       }
 
       const { data } = await api.put(
-        `/farmer/profile/${user?._id}`,
+        `/users/profile/${user?._id}`,
         formData
       );
 

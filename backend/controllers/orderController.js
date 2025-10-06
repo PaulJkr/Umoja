@@ -49,13 +49,13 @@ exports.placeOrder = async (req, res) => {
       }
     }
 
-    // ✅ Send SMS to buyer
+    //  Send SMS to buyer
     sendSMS(
       req.user.phone || "0712345678",
       `🧾 Order #${order._id} placed. Amount: KES ${total}. Txn: ${fakeTransactionId}`
     );
 
-    // ✅ Optionally send SMS to seller
+    //  Optionally send SMS to seller
     const seller = await User.findById(sellerId);
     if (seller?.phone) {
       sendSMS(
