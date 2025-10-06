@@ -3,9 +3,9 @@ import { motion } from "framer-motion";
 import { useAuthStore } from "../../context/authStore";
 import { useFarmerAnalytics } from "../../services/analytics";
 import toast from "react-hot-toast";
-import { jsPDF } from "jspdf";
+import jsPDF from "jspdf";
+import autoTable from "jspdf-autotable";
 import StatCard from "../../components/analytics/StatCard";
-import LineChartCard from "../../components/analytics/LineChartCard";
 import PieChartCard from "../../components/analytics/PieChartCard";
 import {
   TrendingUp,
@@ -34,34 +34,62 @@ const AnalyticsPage = () => {
       }
       const doc = new jsPDF();
 
-      doc.setFontSize(18);
-      doc.text("Farmer Analytics Report", 14, 22);
-
+      // Header
+      doc.setFontSize(20);
+      doc.setFont("helvetica", "bold");
+      doc.text("Umoja Farms", 14, 22);
       doc.setFontSize(12);
-      doc.text(`Report Date: ${new Date().toLocaleDateString()}`, 14, 30);
-      doc.text(`Time Period: ${selectedPeriod}`, 14, 38);
+      doc.setFont("helvetica", "normal");
+      doc.text("Farmer Analytics Report", 14, 30);
 
-      let yPos = 50;
+      // Report Details
+      doc.setFontSize(10);
+      doc.text(`Report Date: ${new Date().toLocaleDateString()}`, 14, 40);
+      doc.text(`Time Period: ${selectedPeriod}`, 14, 46);
 
       // Summary Statistics
-      doc.setFontSize(14);
-      doc.text("Summary Statistics:", 14, yPos);
-      yPos += 10;
-      doc.setFontSize(12);
-      doc.text(`Total Revenue: KSh ${data.totalRevenue.toFixed(2)}`, 14, yPos);
-      yPos += 7;
-      doc.text(`Total Orders: ${data.totalOrders}`, 14, yPos);
-      yPos += 7;
-      doc.text(
-        `Average Order Value: KSh ${(data.totalOrders > 0
-          ? data.totalRevenue / data.totalOrders
-          : 0
-        ).toFixed(2)}`,
-        14,
-        yPos
-      );
-      yPos += 7;
-      doc.text(`Growth Rate: 23.5%`, 14, yPos); // Assuming this is static for now
+      autoTable(doc, {
+        startY: 55,
+        head: [["Metric", "Value"]],
+        body: [
+          ["Total Revenue", `KSh ${data.totalRevenue.toFixed(2)}`],
+          ["Total Orders", data.totalOrders],
+          [
+            "Average Order Value",
+            `KSh ${(data.totalOrders > 0
+              ? data.totalRevenue / data.totalOrders
+              : 0
+            ).toFixed(2)}`,
+          ],
+          ["Growth Rate", "23.5%"], // Assuming this is static for now
+        ],
+        theme: "striped",
+        headStyles: { fillColor: [22, 160, 133] },
+      });
+
+      // Sales by Product Table
+      autoTable(doc, {
+        startY: (doc as any).lastAutoTable.finalY + 15,
+        head: [["Product", "Sales (KSh)"]],
+        body: Object.entries(data.salesByProduct).map(([name, value]) => [
+          name,
+          value.toFixed(2),
+        ]),
+        theme: "grid",
+        headStyles: { fillColor: [41, 128, 185] },
+      });
+
+      // Footer
+      const pageCount = (doc as any).internal.getNumberOfPages();
+      for (let i = 1; i <= pageCount; i++) {
+        doc.setPage(i);
+        doc.setFontSize(10);
+        doc.text(
+          `Page ${i} of ${pageCount}`,
+          doc.internal.pageSize.width - 30,
+          doc.internal.pageSize.height - 10
+        );
+      }
 
       doc.save("farmer_analytics_report.pdf");
       toast.success("Analytics report exported successfully!");
@@ -333,7 +361,7 @@ const AnalyticsPage = () => {
               </div>
             </div>
             <div className="p-6">
-              {/* <LineChartCard data={data.salesTrend} /> */}
+              <PieChartCard data={data.salesByProduct} />
             </div>
           </motion.div>
 
@@ -361,7 +389,7 @@ const AnalyticsPage = () => {
               </div>
             </div>
             <div className="p-6">
-              {/* <PieChartCard data={data.salesByProduct} /> */}
+              <PieChartCard data={data.salesByProduct} />
             </div>
           </motion.div>
         </div>
