@@ -85,11 +85,11 @@ const FarmerProfileForm = () => {
       <div className="grid gap-4">
         <div>
           <label className="block text-sm mb-1">Full Name</label>
-          <Input value={name} onChange={(e) => setName(e.target.value)} required />
+          <Input value={name} onChange={(e) => setName(e.target.value.replace(/[^a-zA-Z\s]/g, ""))} required />
         </div>
         <div>
           <label className="block text-sm mb-1">Phone</label>
-          <Input value={phone} onChange={(e) => setPhone(e.target.value)} required />
+          <Input type="tel" value={phone} onChange={(e) => setPhone(e.target.value.replace(/[^0-9]/g, ""))} required />
         </div>
         <div>
           <label className="block text-sm mb-1">Location</label>

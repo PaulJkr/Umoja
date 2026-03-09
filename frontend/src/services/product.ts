@@ -1,13 +1,11 @@
-import api from "../api/axios"; // ✅ This ensures token is sent
+import api from "../api/axios"; 
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 
-// Product type definition
-// Add Seller interface
 export interface Seller {
   _id: string;
   name: string;
   phone: string;
-  // Add other seller properties as needed
+  
 }
 
 // Update Product interface
@@ -25,7 +23,7 @@ export interface Product {
   certification?: string;
   verified?: boolean;
   status?: "active" | "inactive";
-  seller?: Seller; // Add optional seller info
+  seller?: Seller; 
 }
 export interface AdminProduct extends Product {
   ownerId?: {

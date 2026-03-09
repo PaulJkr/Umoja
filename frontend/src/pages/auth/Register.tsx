@@ -19,8 +19,8 @@ import { useState } from "react";
 import { toast } from "react-toastify";
 
 const registerSchema = z.object({
-  name: z.string().min(2, "Name must be at least 2 characters"),
-  phone: z.string().min(10, "Phone number required"),
+  name: z.string().min(2, "Name must be at least 2 characters").regex(/^[a-zA-Z\s]+$/, "Name must contain only letters and spaces"),
+  phone: z.string().min(10, "Phone number required").regex(/^[0-9]+$/, "Phone number must contain only digits"),
   location: z.string().min(2, "Location is required"), // New field
   password: z
     .string()
@@ -166,6 +166,7 @@ const Register = () => {
             </label>
             <div className="relative">
               <input
+                type="tel"
                 {...register("phone")}
                 placeholder="07XXXXXXXX"
                 className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"

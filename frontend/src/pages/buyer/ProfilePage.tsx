@@ -226,7 +226,7 @@ const ProfilePage = () => {
                             : "border-gray-200 bg-gray-50 cursor-not-allowed"
                         }`}
                         value={name}
-                        onChange={(e) => setName(e.target.value)}
+                        onChange={(e) => setName(e.target.value.replace(/[^a-zA-Z\s]/g, ""))}
                         disabled={!isEditing}
                         placeholder="Enter your full name"
                       />
@@ -240,14 +240,14 @@ const ProfilePage = () => {
                     <div className="relative">
                       <Phone className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
                       <input
-                        type="text"
+                        type="tel"
                         className={`w-full pl-10 pr-4 py-3 bg-white border rounded-xl outline-none transition-all duration-200 ${
                           isEditing
                             ? "border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                             : "border-gray-200 bg-gray-50 cursor-not-allowed"
                         }`}
                         value={phone}
-                        onChange={(e) => setPhone(e.target.value)}
+                        onChange={(e) => setPhone(e.target.value.replace(/[^0-9]/g, ""))}
                         disabled={!isEditing}
                         placeholder="Enter your phone number"
                       />

@@ -5,11 +5,11 @@ export const useFarmerAnalytics = (farmerId: string | undefined, period: string)
   return useQuery({
     queryKey: ["farmerAnalytics", farmerId, period],
     queryFn: async () => {
-      // Remove the extra /api since your base URL already includes it
+     
       const res = await api.get(`/orders/farmer/${farmerId as string}`);
       const orders = res.data;
 
-      // Process the raw orders data into analytics
+      
       const analytics = processOrdersIntoAnalytics(orders, period);
       return analytics;
     },
@@ -17,7 +17,7 @@ export const useFarmerAnalytics = (farmerId: string | undefined, period: string)
   });
 };
 
-// Helper function to process orders into analytics data
+
 interface ProductInOrder {
   productId?: {
     name?: string;

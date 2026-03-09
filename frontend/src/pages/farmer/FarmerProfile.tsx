@@ -526,6 +526,10 @@ export const FarmerProfilePage: React.FC = () => {
                             value: 2,
                             message: "Name must be at least 2 characters",
                           },
+                          pattern: {
+                            value: /^[a-zA-Z\s]+$/,
+                            message: "Name must contain only letters and spaces",
+                          },
                         })}
                         className="h-12 border-gray-200 focus:border-emerald-500 focus:ring-emerald-500 transition-colors"
                       />
@@ -557,7 +561,7 @@ export const FarmerProfilePage: React.FC = () => {
                         {...register("phone", {
                           required: "Phone number is required",
                           pattern: {
-                            value: /^[0-9+\-\s()]+$/,
+                            value: /^[0-9]+$/,
                             message: "Please enter a valid phone number",
                           },
                         })}
