@@ -53,14 +53,14 @@ const AdminDashboard = () => {
       width: 280,
       transition: {
         duration: 0.3,
-        ease: "easeInOut",
+        ease: "easeInOut" as const,
       },
     },
     closed: {
       width: 80,
       transition: {
         duration: 0.3,
-        ease: "easeInOut",
+        ease: "easeInOut" as const,
       },
     },
   };
@@ -70,14 +70,14 @@ const AdminDashboard = () => {
       marginLeft: 0,
       transition: {
         duration: 0.3,
-        ease: "easeInOut",
+        ease: "easeInOut" as const,
       },
     },
     closed: {
       marginLeft: 0,
       transition: {
         duration: 0.3,
-        ease: "easeInOut",
+        ease: "easeInOut" as const,
       },
     },
   };

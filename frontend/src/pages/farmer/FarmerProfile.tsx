@@ -84,7 +84,11 @@ export const FarmerProfilePage: React.FC = () => {
     visible: {
       opacity: 1,
       y: 0,
-      transition: { duration: 0.6, staggerChildren: 0.1, ease: "easeInOut" },
+      transition: {
+        duration: 0.6,
+        staggerChildren: 0.1,
+        ease: "easeInOut" as const,
+      },
     },
   };
 
@@ -93,7 +97,7 @@ export const FarmerProfilePage: React.FC = () => {
     visible: {
       opacity: 1,
       y: 0,
-      transition: { duration: 0.4, ease: "easeInOut" },
+      transition: { duration: 0.4, ease: "easeInOut" as const },
     },
   };
 
@@ -102,7 +106,7 @@ export const FarmerProfilePage: React.FC = () => {
     visible: {
       opacity: 1,
       scale: 1,
-      transition: { duration: 0.3, ease: "easeInOut" },
+      transition: { duration: 0.3, ease: "easeInOut" as const },
     },
     exit: {
       opacity: 0,
@@ -249,7 +253,7 @@ export const FarmerProfilePage: React.FC = () => {
 
       if (response.data.isInitialPassword) {
         toast.success(
-          "Password set successfully! You can now use this password to log in."
+          "Password set successfully! You can now use this password to log in.",
         );
         setHasExistingPassword(true);
       } else {
@@ -455,7 +459,7 @@ export const FarmerProfilePage: React.FC = () => {
                                 onZoomChange={setZoom}
                                 onCropComplete={(
                                   croppedArea: Area,
-                                  croppedAreaPixels: Area
+                                  croppedAreaPixels: Area,
                                 ) => {
                                   setCroppedAreaPixels(croppedAreaPixels);
                                 }}
@@ -528,7 +532,8 @@ export const FarmerProfilePage: React.FC = () => {
                           },
                           pattern: {
                             value: /^[a-zA-Z\s]+$/,
-                            message: "Name must contain only letters and spaces",
+                            message:
+                              "Name must contain only letters and spaces",
                           },
                         })}
                         className="h-12 border-gray-200 focus:border-emerald-500 focus:ring-emerald-500 transition-colors"

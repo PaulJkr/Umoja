@@ -69,7 +69,7 @@ const MessagesPage = () => {
       y: 0,
       transition: {
         duration: 0.3,
-        ease: "easeInOut",
+        ease: "easeInOut" as const,
       },
     },
   };
@@ -244,7 +244,7 @@ const MessagesPage = () => {
                           </h3>
                           <div
                             className={`inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium border mt-1 ${getRoleBadgeColor(
-                              seller.role
+                              seller.role,
                             )}`}
                           >
                             <span className="mr-1">

@@ -4,6 +4,7 @@ export interface User {
   _id: string;
   name: string;
   phone: string;
+  email?: string;
   role: "farmer" | "buyer" | "admin" | "supplier";
   location?: string;
   avatar?: string;
